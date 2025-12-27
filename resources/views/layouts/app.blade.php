@@ -1,70 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XploraFree</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ time() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    @yield('extra-head')
+    
+    <!-- TU CSS del grid + logo -->
     <style>
-        nav {
-            background-color: white;
-            padding: 20px 15px;
-            border-bottom: 2px solid #ddd;
-        }
-
-       
-
-        nav a {
-            color: #0d6efd;
-            font-weight: bold;
-            margin-left: 15px;
-            text-decoration: none;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .main-container {
-            padding-top: 90px;
-            padding-bottom: 30px;
-        }
-        /* Logo principal */
-        nav .navbar-brand img {
-            height: 20vh; /* 8% de la altura de la ventana, se adapta al tamaño de pantalla */
-            width: auto; /* Mantiene la proporción original */
-            transition: height 0.3s ease; /* Efecto suave al cambiar tamaño */
-        }
-
-        /* Ajustes para pantallas muy pequeñas */
-        @media (max-width: 576px) {
-            nav .navbar-brand img {
-                height: 6vh; /* Más pequeño en móviles */
-            }
-        }
+        /* TODO tu CSS anterior del grid, logo, etc. */
+        nav { background-color: white; padding: 20px 15px; border-bottom: 2px solid #ddd; }
+        nav a { color: #0d6efd; font-weight: bold; margin-left: 15px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .main-container { padding-top: 90px; padding-bottom: 30px; }
+        
+        /* PEGA AQUÍ todo tu CSS del grid que teníamos */
+        .posts-grid { /* ... tu CSS del grid ... */ }
+        
+        /* LOGIN NAVBAR */
+        nav .login-links a { margin-left: 15px !important; }
     </style>
 </head>
 <body>
-
-    <!-- Menú superior -->
-    <nav class="d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="{{ url('/') }}">
-            <img src="{{ asset('images/logo-xplorefree.png') }}" alt="Logo XploraFree">
+    <!-- TU NAVBAR CON LOGIN -->
+    <nav class="d-flex align-items-center justify-content-between">
+        <a href="{{ route('posts.index') }}" class="navbar-brand">
+            <img src="{{ asset('images/logo.png') }}" alt="XploraFree">
         </a>
-        <div>
-            <a href="{{ url('/posts') }}">¿Que ver?</a>
-            <a href="{{ url('/registro') }}">Registrarse</a>
-            <a href="{{ url('/login') }}">Loguearse</a>
+        
+        <div class="login-links">
+            @auth
+                <span style="color: #0d6efd; font-weight: bold;">Hola, {{ Auth::user()->name }}!</span>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" 
+                       style="color: #dc3545; font-weight: bold;">Cerrar sesión</a>
+                </form>
+            @else
+                <a href="{{ route('login') }}">Entrar</a>
+                <a href="{{ route('register') }}">Registrarse</a>
+            @endauth
         </div>
     </nav>
 
-    <!-- Contenido principal -->
-    <div class="container main-container">
+    <div class="main-container">
         @yield('contenido')
     </div>
-
-    @yield('scripts')
 </body>
 </html>
