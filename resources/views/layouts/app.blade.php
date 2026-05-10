@@ -20,10 +20,6 @@
                    class="nav-link {{ request()->routeIs('posts.index') && !request('seccion') ? 'active' : '' }}">
                     🌍 Explorar
                 </a>
-<a href="{{ route('lugares.index') }}"
-                   class="nav-link {{ request()->routeIs('lugares.*') ? 'active' : '' }}">
-                    📌 Lugares
-                </a>
             </div>
 
             <div class="nav-actions">
