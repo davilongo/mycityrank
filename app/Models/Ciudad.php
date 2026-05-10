@@ -10,6 +10,11 @@ class Ciudad extends Model
 
     protected $fillable = ['nombre'];
 
+    public function getRouteKeyName(): string
+    {
+        return 'nombre';
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);

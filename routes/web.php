@@ -1,26 +1,39 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\CiudadController;
+use App\Http\Controllers\UserController;
 
-// Posts públicos
-Route::get('/posts', [App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
-Route::get('/posts/{post}', [App\Http\Controllers\PostController::class, 'show'])->name('posts.show');
-
-// Posts protegidos
-Route::middleware('auth')->group(function () {
-    Route::get('/posts/create', [App\Http\Controllers\PostController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [App\Http\Controllers\PostController::class, 'store'])->name('posts.store');
-    Route::get('/posts/{post}/edit', [App\Http\Controllers\PostController::class, 'edit'])->name('posts.edit');
-    Route::put('/posts/{post}', [App\Http\Controllers\PostController::class, 'update'])->name('posts.update');
-    Route::delete('/posts/{post}', [App\Http\Controllers\PostController::class, 'destroy'])->name('posts.destroy');
+Route::get('/', function () {
+    return redirect()->route('posts.index');
 });
 
-Route::post('/posts/{post}/like', [\App\Http\Controllers\LikeController::class, 'toggle'])
-    ->middleware('auth')
-    ->name('posts.like');
-Route::post('/posts/{post}/comment', [App\Http\Controllers\PostController::class, 'comment'])
-    ->middleware('auth')
-    ->name('posts.comment');
+// Posts (create debe ir antes que {post})
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('/posts/create', [PostController::class, 'create'])->middleware('auth')->name('posts.create');
+Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
+// Ciudades (buscar debe ir antes que {ciudad})
+Route::get('/ciudades/buscar', [CiudadController::class, 'buscar'])->name('ciudades.buscar');
+Route::get('/ciudades/{ciudad}', [CiudadController::class, 'show'])->name('ciudades.show');
 
-require __DIR__.'/auth.php';  // ← ESTA LÍNEA ES CLAVE
+// Perfiles de usuario
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+// Rutas protegidas (requieren login)
+Route::middleware('auth')->group(function () {
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])->name('posts.like');
+    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
+
+    // Perfil (editar)
+    Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+});
+
+require __DIR__.'/auth.php';

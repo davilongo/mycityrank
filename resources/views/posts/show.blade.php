@@ -1,73 +1,92 @@
 @extends('layouts.app')
 
 @section('contenido')
-<div style="max-width: 900px; margin: 0 auto; padding: 20px;">
-    <!-- Imagen grande -->
-    <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" 
-         style="width: 100%; height: 400px; object-fit: cover; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: block; margin-bottom: 25px;">
-    
-    <h1 style="font-size: 2.2rem; color: #333; margin-bottom: 20px;">{{ $post->title }}</h1>
-    
-    <!-- Info ciudad/categoría -->
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: flex; gap: 20px; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.5rem;">📍</span>
-            <strong>{{ $post->ciudad->nombre ?? 'Explora' }}</strong>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.5rem;">🏷️</span>
-            <span style="background: #0d6efd; color: white; padding: 4px 12px; border-radius: 20px;">{{ $post->category }}</span>
-        </div>
-    </div>
-    
-    <!-- Contenido -->
-    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); line-height: 1.7; font-size: 1.1rem; margin-bottom: 30px;">
-        {!! nl2br(e($post->content)) !!}
-    </div>
-    
-    <!-- Botones -->
-    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-        <a href="{{ route('posts.index') }}" 
-           style="padding: 12px 30px; background: #6c757d; color: white; text-decoration: none; border-radius: 25px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-           ← Volver al feed
-        </a>
-        <a href="{{ route('posts.edit', $post) }}" 
-           style="padding: 12px 30px; background: #0d6efd; color: white; text-decoration: none; border-radius: 25px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-           ✏️ Editar
-        </a>
+
+<div class="post-detail-nav">
+    <a href="{{ route('posts.index') }}" class="btn-back">← Volver</a>
+    @auth
+        @if(Auth::id() === $post->user_id || Auth::user()->isAdmin())
+            <a href="{{ route('posts.edit', $post) }}" class="btn-edit">✏️ Editar</a>
+            <form method="POST" action="{{ route('posts.destroy', $post) }}" style="display:inline;"
+                  onsubmit="return confirm('¿Seguro que quieres borrar este post?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-delete">🗑️ Borrar</button>
+            </form>
+        @endif
+    @endauth
+</div>
+
+<div class="post-detail-wrap">
+
+    <!-- Imagen -->
+    <div class="post-detail-image">
+        <img src="{{ asset($post->image) }}" alt="{{ $post->title }}">
     </div>
 
-    <!-- Comentarios -->
-    <div style="margin-top: 40px;">
-        <h3 style="color: #333; margin-bottom: 20px;">💬 Comentarios ({{ $post->comments->count() }})</h3>
-        
-        @auth
-        <!-- Formulario nuevo comentario -->
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
-            <form method="POST" action="{{ route('posts.comment', $post) }}">
-                @csrf
-                <textarea name="body" placeholder="¡Comparte tu experiencia!" 
-                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; min-height: 80px;"
-                        required></textarea>
-                <button type="submit" style="margin-top: 10px; padding: 10px 20px; background: #0d6efd; color: white; border: none; border-radius: 25px; font-weight: 600;">
-                    Comentar
-                </button>
-            </form>
+    <!-- Panel derecho -->
+    <div class="post-detail-side">
+
+        <div class="post-detail-header">
+            <div class="post-detail-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</div>
+            <span class="post-detail-username">{{ $post->user->name ?? 'Anónimo' }}</span>
         </div>
+
+        <div class="post-detail-meta">
+            <span class="meta-badge">📍 {{ $post->ciudad->nombre ?? 'Desconocida' }}</span>
+            <span class="meta-badge">🏷️ {{ $post->category }}</span>
+            <span class="meta-badge">🕐 {{ $post->created_at->diffForHumans() }}</span>
+        </div>
+
+        <div class="post-detail-caption">
+            <h1>{{ $post->title }}</h1>
+            <p>{!! nl2br(e($post->content)) !!}</p>
+        </div>
+
+        <div class="post-detail-comments">
+            @forelse($post->comments as $comment)
+                <div class="comment-item">
+                    <div class="comment-avatar">{{ mb_substr($comment->user->name ?? 'A', 0, 1) }}</div>
+                    <div class="comment-body">
+                        <span class="comment-username">{{ $comment->user->name }}</span>
+                        <span class="comment-text">{{ $comment->body }}</span>
+                        <div class="comment-time">{{ $comment->created_at->diffForHumans() }}</div>
+                    </div>
+                </div>
+            @empty
+                <p class="no-comments">Aún no hay comentarios</p>
+            @endforelse
+        </div>
+
+        <div class="post-detail-actions">
+            <form style="display:inline;" action="{{ route('posts.like', $post) }}" method="POST">
+                @csrf
+                @auth
+                    <button type="submit" class="like-btn">
+                        {{ $post->likes->contains('user_id', Auth::id()) ? '❤️' : '🤍' }}
+                    </button>
+                @else
+                    <a href="{{ route('login') }}" style="font-size:22px;">🤍</a>
+                @endauth
+            </form>
+            <div class="post-detail-likes">{{ $post->likes->count() }} Me gusta</div>
+            <div class="post-detail-date">{{ $post->created_at->format('d M Y') }}</div>
+        </div>
+
+        @auth
+            <form class="post-detail-comment-form" method="POST" action="{{ route('posts.comment', $post) }}">
+                @csrf
+                <textarea name="body" placeholder="Añade un comentario..." required rows="1"
+                          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <button type="submit">Publicar</button>
+            </form>
+        @else
+            <div class="login-to-comment">
+                <a href="{{ route('login') }}">Inicia sesión</a> para comentar.
+            </div>
         @endauth
 
-        <!-- Lista comentarios -->
-        @forelse($post->comments as $comment)
-        <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-weight: 700; color: #0d6efd;">{{ $comment->user->name }}</span>
-                <span style="color: #666; font-size: 0.9rem;">{{ $comment->created_at->diffForHumans() }}</span>
-            </div>
-            <p style="margin: 0; line-height: 1.6;">{{ $comment->body }}</p>
-        </div>
-        @empty
-        <p style="color: #666; text-align: center; padding: 40px; background: #f8f9fa; border-radius: 12px;">¡Sé el primero en comentar!</p>
-        @endforelse
     </div>
+</div>
 
 @endsection
