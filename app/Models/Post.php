@@ -11,6 +11,19 @@ class Post extends Model
 
     protected $table = 'posts';
 
+    const CATEGORIES = [
+        '🍽️ Restaurante',
+        '🍺 Bar & Copas',
+        '☕ Café',
+        '🏛️ Monumento & Cultura',
+        '🌿 Parque & Naturaleza',
+        '🛍️ Tienda & Mercado',
+        '🏖️ Playa',
+        '🎭 Ocio & Entretenimiento',
+        '🏨 Alojamiento',
+        '💡 Joya Oculta',
+    ];
+
     protected $fillable = [
         'title',
         'slug',

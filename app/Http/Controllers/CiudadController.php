@@ -30,9 +30,15 @@ class CiudadController extends Controller
             $query->where('category', $request->categoria);
         }
 
-        $posts      = $query->orderBy('id', 'desc')->paginate(12)->withQueryString();
-        $categorias = $ciudad->posts()->distinct()->orderBy('category')->pluck('category');
+        $posts = $query->orderByDesc('likes_count')->paginate(12)->withQueryString();
 
-        return view('ciudades.show', compact('ciudad', 'posts', 'categorias'));
+        $top3 = !$request->filled('categoria')
+            ? $ciudad->posts()->with(['user'])->withCount(['likes', 'comments'])
+                ->orderByDesc('likes_count')->limit(3)->get()
+            : collect();
+
+        $categorias = \App\Models\Post::CATEGORIES;
+
+        return view('ciudades.show', compact('ciudad', 'posts', 'top3', 'categorias'));
     }
 }

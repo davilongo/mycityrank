@@ -1115,6 +1115,123 @@ select.form-input { cursor: pointer; }
   justify-content: center;
 }
 
+/* City rank badge on home grid */
+.city-card { position: relative; }
+
+.city-rank-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 22px;
+  line-height: 1;
+  z-index: 2;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+}
+
+/* City top ranking section */
+.city-top-section {
+  padding: 32px 24px 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.city-top-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.city-top-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.city-top-subtitle {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.city-top-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 700px) {
+  .city-top-grid { grid-template-columns: 1fr; }
+}
+
+.city-top-card {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--dark-card);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.city-top-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+
+.city-top-rank-1 { border: 2px solid #f59e0b; }
+.city-top-rank-2 { border: 2px solid #94a3b8; }
+.city-top-rank-3 { border: 2px solid #b45309; }
+
+.city-top-img-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.city-top-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.city-top-rank {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 28px;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
+}
+
+.city-top-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.city-top-cat {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.city-top-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.city-top-stats {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
 /* Map picker (create/edit forms) */
 .map-picker {
   width: 100%;

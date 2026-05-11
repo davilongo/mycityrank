@@ -40,23 +40,29 @@
     </div>
 </section>
 
-{{-- ===== DESTINOS POPULARES ===== --}}
+{{-- ===== RANKING DE CIUDADES ===== --}}
 @if($ciudadesPopulares->isNotEmpty())
 <section class="section" id="destinos">
     <div class="section-header">
-        <h2 class="section-title">🏙️ Destinos populares</h2>
+        <div>
+            <h2 class="section-title">🏆 Ranking de ciudades</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Las ciudades con más contenido de la comunidad</p>
+        </div>
     </div>
     <div class="cities-grid">
-        @foreach($ciudadesPopulares as $ciudad)
+        @foreach($ciudadesPopulares as $i => $ciudad)
             <a href="{{ route('ciudades.show', $ciudad) }}" class="city-card">
                 @if($ciudad->posts->first()?->image)
                     <img src="{{ asset($ciudad->posts->first()->image) }}" alt="{{ $ciudad->nombre }}">
                 @else
                     <div class="city-card-placeholder"></div>
                 @endif
+                @if($i < 3)
+                    <span class="city-rank-badge">{{ ['🥇','🥈','🥉'][$i] }}</span>
+                @endif
                 <div class="city-card-overlay">
                     <span class="city-card-name">{{ $ciudad->nombre }}</span>
-                    <span class="city-card-count">{{ $ciudad->posts_count }} {{ $ciudad->posts_count === 1 ? 'publicación' : 'publicaciones' }}</span>
+                    <span class="city-card-count">{{ $ciudad->posts_count }} {{ $ciudad->posts_count === 1 ? 'lugar' : 'lugares' }}</span>
                 </div>
             </a>
         @endforeach

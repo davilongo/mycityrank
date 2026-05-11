@@ -25,8 +25,12 @@
 
             <div class="form-group">
                 <label for="category">Categoría</label>
-                <input type="text" name="category" id="category" value="{{ old('category') }}"
-                       placeholder="Playa, Montaña, Ciudad..." required>
+                <select name="category" id="category" required>
+                    <option value="">— Elige una categoría —</option>
+                    @foreach(\App\Models\Post::CATEGORIES as $cat)
+                        <option value="{{ $cat }}" {{ old('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
                 @error('category') <span class="error">{{ $message }}</span> @enderror
             </div>
 

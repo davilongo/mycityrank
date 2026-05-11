@@ -2,10 +2,10 @@
 
 @section('contenido')
 
-{{-- ===== CABECERA DE CIUDAD ===== --}}
+{{-- ===== CABECERA ===== --}}
 <div class="city-hero">
-    @if($posts->first()?->image)
-        <div class="city-hero-bg" style="background-image:url('{{ asset($posts->first()->image) }}')"></div>
+    @if($top3->first()?->image ?? $posts->first()?->image)
+        <div class="city-hero-bg" style="background-image:url('{{ asset(($top3->first() ?? $posts->first())->image) }}')"></div>
     @endif
     <div class="city-hero-overlay"></div>
     <div class="city-hero-content">
@@ -15,21 +15,47 @@
     </div>
 </div>
 
-{{-- ===== FILTRO POR CATEGORÍA ===== --}}
-@if($categorias->isNotEmpty())
-    <div class="cat-filter-wrap">
-        <a href="{{ route('ciudades.show', $ciudad) }}"
-           class="cat-pill {{ !request('categoria') ? 'active' : '' }}">
-            Todos
-        </a>
-        @foreach($categorias as $cat)
-            <a href="{{ route('ciudades.show', $ciudad) }}?categoria={{ urlencode($cat) }}"
-               class="cat-pill {{ request('categoria') === $cat ? 'active' : '' }}">
-                {{ $cat }}
+{{-- ===== TOP 3 ===== --}}
+@if($top3->isNotEmpty() && !request('categoria'))
+<section class="city-top-section">
+    <div class="city-top-header">
+        <h2 class="city-top-title">⭐ Lo mejor de {{ $ciudad->nombre }}</h2>
+        <span class="city-top-subtitle">Los lugares más votados por la comunidad</span>
+    </div>
+    <div class="city-top-grid">
+        @foreach($top3 as $i => $post)
+            <a href="{{ route('posts.show', $post) }}" class="city-top-card city-top-rank-{{ $i + 1 }}">
+                <div class="city-top-img-wrap">
+                    <img src="{{ asset($post->image) }}" alt="{{ $post->title }}">
+                    <span class="city-top-rank">{{ ['🥇','🥈','🥉'][$i] }}</span>
+                </div>
+                <div class="city-top-body">
+                    <span class="city-top-cat">{{ $post->category }}</span>
+                    <h3 class="city-top-name">{{ $post->title }}</h3>
+                    <div class="city-top-stats">
+                        <span>❤️ {{ $post->likes_count }}</span>
+                        <span>💬 {{ $post->comments_count }}</span>
+                    </div>
+                </div>
             </a>
         @endforeach
     </div>
+</section>
 @endif
+
+{{-- ===== FILTRO POR CATEGORÍA ===== --}}
+<div class="cat-filter-wrap">
+    <a href="{{ route('ciudades.show', $ciudad) }}"
+       class="cat-pill {{ !request('categoria') ? 'active' : '' }}">
+        Todos
+    </a>
+    @foreach($categorias as $cat)
+        <a href="{{ route('ciudades.show', $ciudad) }}?categoria={{ urlencode($cat) }}"
+           class="cat-pill {{ request('categoria') === $cat ? 'active' : '' }}">
+            {{ $cat }}
+        </a>
+    @endforeach
+</div>
 
 {{-- ===== GRID DE POSTS ===== --}}
 @if($posts->isEmpty())

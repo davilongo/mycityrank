@@ -20,8 +20,9 @@ class PostController extends Controller
 
         $ciudadesPopulares = Ciudad::withCount('posts')
             ->having('posts_count', '>', 0)
+            ->withSum('posts as total_likes', 'id')
             ->orderBy('posts_count', 'desc')
-            ->with(['posts' => fn ($q) => $q->latest()->limit(1)])
+            ->with(['posts' => fn ($q) => $q->withCount('likes')->orderByDesc('likes_count')->limit(1)])
             ->limit(6)
             ->get();
 
@@ -39,7 +40,7 @@ class PostController extends Controller
             'title'         => 'required|string|max:255',
             'slug'          => 'required|string|max:255',
             'content'       => 'required',
-            'category'      => 'required|string|max:100',
+            'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
             'image'         => 'required|image|max:4096',
             'lat'           => 'nullable|numeric|between:-90,90',
@@ -93,7 +94,7 @@ class PostController extends Controller
             'title'         => 'required|string|max:255',
             'slug'          => 'required|string|max:255|unique:posts,slug,' . $post->id,
             'content'       => 'required',
-            'category'      => 'required|string|max:100',
+            'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
             'image'         => 'nullable|image|max:4096',
             'lat'           => 'nullable|numeric|between:-90,90',
