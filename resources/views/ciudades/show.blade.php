@@ -11,7 +11,18 @@
     <div class="city-hero-content">
         <a href="{{ route('posts.index') }}" class="city-hero-back">← Volver</a>
         <h1 class="city-hero-title">📍 {{ $ciudad->nombre }}</h1>
-        <p class="city-hero-meta">{{ $posts->total() }} {{ $posts->total() === 1 ? 'publicación' : 'publicaciones' }}</p>
+        <p class="city-hero-meta">
+            {{ $posts->total() }} {{ $posts->total() === 1 ? 'publicación' : 'publicaciones' }}
+            · {{ $followersCount }} {{ $followersCount === 1 ? 'seguidor' : 'seguidores' }}
+        </p>
+        @auth
+            <form method="POST" action="{{ route('ciudades.follow', $ciudad) }}" style="margin-top:12px;">
+                @csrf
+                <button type="submit" class="btn-follow-city {{ $isFollowing ? 'following' : '' }}">
+                    {{ $isFollowing ? '✓ Siguiendo' : '+ Seguir ciudad' }}
+                </button>
+            </form>
+        @endauth
     </div>
 </div>
 

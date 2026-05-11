@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CiudadFollowController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -48,6 +49,9 @@ Route::middleware('auth')->group(function () {
     // Bookmarks
     Route::get('/guardados', [BookmarkController::class, 'index'])->name('bookmarks.index');
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle'])->name('posts.bookmark');
+
+    // Seguir ciudades
+    Route::post('/ciudades/{ciudad}/follow', [CiudadFollowController::class, 'toggle'])->name('ciudades.follow');
 
     // Seguidores
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ciudad;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CiudadController extends Controller
@@ -37,8 +38,10 @@ class CiudadController extends Controller
                 ->orderByDesc('likes_count')->limit(3)->get()
             : collect();
 
-        $categorias = \App\Models\Post::CATEGORIES;
+        $categorias   = Post::CATEGORIES;
+        $isFollowing  = auth()->check() ? auth()->user()->isFollowingCiudad($ciudad) : false;
+        $followersCount = $ciudad->followers()->count();
 
-        return view('ciudades.show', compact('ciudad', 'posts', 'top3', 'categorias'));
+        return view('ciudades.show', compact('ciudad', 'posts', 'top3', 'categorias', 'isFollowing', 'followersCount'));
     }
 }

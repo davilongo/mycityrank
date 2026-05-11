@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Ciudad;
 use App\Notifications\NewComment;
+use App\Notifications\NewPostInCity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,11 @@ class PostController extends Controller
         ]);
 
         $post->syncHashtags();
+
+        // Notificar a seguidores de la ciudad
+        $post->ciudad->followers()
+            ->where('users.id', '!=', Auth::id())
+            ->each(fn ($follower) => $follower->notify(new NewPostInCity(Auth::user(), $post)));
 
         return redirect()->route('posts.index')->with('success', 'Post creado correctamente');
     }
@@ -167,7 +173,9 @@ class PostController extends Controller
 
     private function canModify(Post $post): bool
     {
-        return Auth::id() === $post->user_id || Auth::user()->isAdmin();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        return Auth::id() === $post->user_id || $user?->isAdmin();
     }
 
     private function resolveCiudad(string $nombre): Ciudad

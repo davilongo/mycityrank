@@ -1,0 +1,48 @@
+server {
+    server_name xplorefree.com www.xplorefree.com;
+    client_max_body_size 20M;  # ← AQUÍ
+    root /var/www/xploreFree/public;
+    index index.php index.html index.htm;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+    
+    location ~ /\.ht {
+        deny all;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/xplorefree.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/xplorefree.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.xplorefree.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = xplorefree.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name xplorefree.com www.xplorefree.com;
+    return 404; # managed by Certbot
+
+
+
+
+}

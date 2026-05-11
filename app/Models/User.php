@@ -67,4 +67,14 @@ class User extends Authenticatable
     {
         return $this->following()->where('following_id', $user->id)->exists();
     }
+
+    public function followingCiudades()
+    {
+        return $this->belongsToMany(Ciudad::class, 'ciudad_follows')->withTimestamps();
+    }
+
+    public function isFollowingCiudad(Ciudad $ciudad): bool
+    {
+        return $this->followingCiudades()->where('ciudad_id', $ciudad->id)->exists();
+    }
 }

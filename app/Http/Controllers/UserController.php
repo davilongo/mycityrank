@@ -19,7 +19,7 @@ class UserController extends Controller
 
         $followersCount = $user->followers()->count();
         $followingCount = $user->following()->count();
-        $isFollowing    = Auth::check() ? Auth::user()->isFollowing($user) : false;
+        $isFollowing    = Auth::check() ? $this->authUser()->isFollowing($user) : false;
 
         return view('users.show', compact('user', 'posts', 'followersCount', 'followingCount', 'isFollowing'));
     }
@@ -46,13 +46,14 @@ class UserController extends Controller
 
     public function discover()
     {
-        $me           = Auth::user();
+        $me           = $this->authUser();
         $excludeIds   = $me->following()->pluck('users.id')->push($me->id);
 
-        // Ciudades donde he publicado + ciudades de los posts que he guardado (bookmarks)
+        // Ciudades donde he publicado + ciudades que sigo + ciudades de mis bookmarks
         $citiesFromPosts     = $me->posts()->pluck('ciudad_id');
+        $citiesFromFollowing = $me->followingCiudades()->pluck('ciudades.id');
         $citiesFromBookmarks = $me->bookmarks()->join('posts', 'bookmarks.post_id', '=', 'posts.id')->pluck('posts.ciudad_id');
-        $myCityIds           = $citiesFromPosts->merge($citiesFromBookmarks)->filter()->unique();
+        $myCityIds           = $citiesFromPosts->merge($citiesFromFollowing)->merge($citiesFromBookmarks)->filter()->unique();
 
         if ($myCityIds->isNotEmpty()) {
             $suggested = User::whereHas('posts', fn ($q) => $q->whereIn('ciudad_id', $myCityIds))
@@ -88,7 +89,7 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = $this->authUser();
 
         $validated = $request->validate([
             'name'   => 'required|string|max:255',
@@ -105,5 +106,12 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route('users.show', $user)->with('success', 'Perfil actualizado.');
+    }
+
+    private function authUser(): User
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        return $user;
     }
 }
