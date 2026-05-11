@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Like;
+use App\Notifications\NewLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +29,10 @@ class LikeController extends Controller
                 'post_id' => $post->id,
                 'user_id' => $user->id,
             ]);
+
+            if ($post->user_id !== $user->id) {
+                $post->user->notify(new NewLike($user, $post));
+            }
         }
 
         return back();

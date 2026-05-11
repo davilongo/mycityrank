@@ -5,6 +5,9 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -22,6 +25,12 @@ Route::get('/ciudades/{ciudad}', [CiudadController::class, 'show'])->name('ciuda
 // Perfiles de usuario
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
+// Hashtags
+Route::get('/hashtag/{name}', [PostController::class, 'hashtag'])->name('hashtag.show');
+
+// Mapa
+Route::get('/mapa', [PostController::class, 'map'])->name('mapa');
+
 // Rutas protegidas (requieren login)
 Route::middleware('auth')->group(function () {
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
@@ -34,6 +43,18 @@ Route::middleware('auth')->group(function () {
     // Perfil (editar)
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+
+    // Bookmarks
+    Route::get('/guardados', [BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle'])->name('posts.bookmark');
+
+    // Seguidores
+    Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
+    Route::get('/feed', [FollowController::class, 'feed'])->name('feed');
+
+    // Notificaciones
+    Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notificaciones/{id}/leida', [NotificationController::class, 'markRead'])->name('notifications.read');
 });
 
 require __DIR__.'/auth.php';

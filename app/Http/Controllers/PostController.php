@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Ciudad;
+use App\Notifications\NewComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,8 @@ class PostController extends Controller
             'category'      => 'required|string|max:100',
             'ciudad_nombre' => 'required|string|max:100',
             'image'         => 'required|image|max:4096',
+            'lat'           => 'nullable|numeric|between:-90,90',
+            'lng'           => 'nullable|numeric|between:-180,180',
         ]);
 
         $path = $request->file('image')->store('public/images');
@@ -53,7 +56,7 @@ class PostController extends Controller
             $slug = $validated['slug'] . '-' . $counter++;
         }
 
-        Post::create([
+        $post = Post::create([
             'title'     => $validated['title'],
             'slug'      => $slug,
             'content'   => $validated['content'],
@@ -61,14 +64,18 @@ class PostController extends Controller
             'category'  => $validated['category'],
             'ciudad_id' => $ciudad->id,
             'user_id'   => Auth::id(),
+            'lat'       => $validated['lat'] ?? null,
+            'lng'       => $validated['lng'] ?? null,
         ]);
+
+        $post->syncHashtags();
 
         return redirect()->route('posts.index')->with('success', 'Post creado correctamente');
     }
 
     public function show(Post $post)
     {
-        $post->load(['comments.user', 'ciudad', 'likes']);
+        $post->load(['comments.user', 'ciudad', 'likes', 'hashtags']);
         return view('posts.show', compact('post'));
     }
 
@@ -89,6 +96,8 @@ class PostController extends Controller
             'category'      => 'required|string|max:100',
             'ciudad_nombre' => 'required|string|max:100',
             'image'         => 'nullable|image|max:4096',
+            'lat'           => 'nullable|numeric|between:-90,90',
+            'lng'           => 'nullable|numeric|between:-180,180',
         ]);
 
         $post->title    = $request->title;
@@ -101,7 +110,10 @@ class PostController extends Controller
         }
 
         $post->ciudad_id = $this->resolveCiudad($request->ciudad_nombre)->id;
+        $post->lat = $request->lat ?: null;
+        $post->lng = $request->lng ?: null;
         $post->save();
+        $post->syncHashtags();
 
         return redirect()->route('posts.show', $post);
     }
@@ -122,7 +134,34 @@ class PostController extends Controller
             'user_id' => Auth::id(),
         ]);
 
+        if ($post->user_id !== Auth::id()) {
+            $post->user->notify(new NewComment(Auth::user(), $post));
+        }
+
         return back()->with('success', '¡Comentario publicado!');
+    }
+
+    public function hashtag(string $name)
+    {
+        $hashtag = \App\Models\Hashtag::where('name', strtolower($name))->firstOrFail();
+
+        $posts = $hashtag->posts()
+            ->with(['user', 'ciudad'])
+            ->withCount(['likes', 'comments'])
+            ->latest()
+            ->paginate(12);
+
+        return view('posts.hashtag', compact('hashtag', 'posts'));
+    }
+
+    public function map()
+    {
+        $posts = Post::whereNotNull('lat')
+            ->whereNotNull('lng')
+            ->with(['user', 'ciudad'])
+            ->get(['id', 'title', 'slug', 'image', 'lat', 'lng', 'user_id', 'ciudad_id']);
+
+        return view('posts.mapa', compact('posts'));
     }
 
     private function canModify(Post $post): bool

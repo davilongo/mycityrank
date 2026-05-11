@@ -40,7 +40,17 @@
 
         <div class="post-detail-caption">
             <h1>{{ $post->title }}</h1>
-            <p>{!! nl2br(e($post->content)) !!}</p>
+            <p>{!! preg_replace_callback('/#(\w+)/u', fn($m) =>
+                '<a href="' . route('hashtag.show', $m[1]) . '" class="hashtag-link">#' . e($m[1]) . '</a>',
+                nl2br(e($post->content))
+            ) !!}</p>
+            @if($post->hashtags->isNotEmpty())
+                <div class="hashtag-list">
+                    @foreach($post->hashtags as $tag)
+                        <a href="{{ route('hashtag.show', $tag->name) }}" class="hashtag-pill">#{{ $tag->name }}</a>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         <div class="post-detail-comments">
@@ -58,6 +68,10 @@
             @endforelse
         </div>
 
+        @if($post->lat && $post->lng)
+            <div id="post-map" class="post-detail-map"></div>
+        @endif
+
         <div class="post-detail-actions">
             <form style="display:inline;" action="{{ route('posts.like', $post) }}" method="POST">
                 @csrf
@@ -70,6 +84,17 @@
                 @endauth
             </form>
             <div class="post-detail-likes">{{ $post->likes->count() }} Me gusta</div>
+
+            @auth
+                <form style="display:inline;margin-left:auto;" action="{{ route('posts.bookmark', $post) }}" method="POST">
+                    @csrf
+                    @php $saved = Auth::user()->bookmarks()->where('post_id', $post->id)->exists(); @endphp
+                    <button type="submit" class="bookmark-btn" title="{{ $saved ? 'Quitar de guardados' : 'Guardar post' }}">
+                        {{ $saved ? '🔖' : '🏷️' }}
+                    </button>
+                </form>
+            @endauth
+
             <div class="post-detail-date">{{ $post->created_at->format('d M Y') }}</div>
         </div>
 
@@ -88,5 +113,24 @@
 
     </div>
 </div>
+
+@if($post->lat && $post->lng)
+@push('scripts')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    const map = L.map('post-map').setView([{{ $post->lat }}, {{ $post->lng }}], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    L.marker([{{ $post->lat }}, {{ $post->lng }}])
+        .addTo(map)
+        .bindPopup('{{ e($post->title) }}')
+        .openPopup();
+})();
+</script>
+@endpush
+@endif
 
 @endsection

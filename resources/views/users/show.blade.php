@@ -22,13 +22,24 @@
                 @auth
                     @if(Auth::id() === $user->id)
                         <a href="{{ route('profile.edit') }}" class="btn-ghost" style="margin-left:8px;">Editar perfil</a>
+                    @else
+                        <form method="POST" action="{{ route('users.follow', $user) }}" style="margin-left:8px;">
+                            @csrf
+                            <button type="submit" class="{{ $isFollowing ? 'btn-ghost' : 'btn-nav' }}">
+                                {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
+                            </button>
+                        </form>
                     @endif
                 @endauth
             </div>
             @if($user->bio)
                 <p class="profile-bio">{{ $user->bio }}</p>
             @endif
-            <p class="profile-stats">{{ $posts->total() }} {{ $posts->total() === 1 ? 'publicación' : 'publicaciones' }}</p>
+            <div class="profile-stats">
+                <span><strong>{{ $posts->total() }}</strong> publicaciones</span>
+                <span><strong>{{ $followersCount }}</strong> seguidores</span>
+                <span><strong>{{ $followingCount }}</strong> siguiendo</span>
+            </div>
         </div>
     </div>
 

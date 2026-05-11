@@ -16,7 +16,11 @@ class UserController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(12);
 
-        return view('users.show', compact('user', 'posts'));
+        $followersCount = $user->followers()->count();
+        $followingCount = $user->following()->count();
+        $isFollowing    = Auth::check() ? Auth::user()->isFollowing($user) : false;
+
+        return view('users.show', compact('user', 'posts', 'followersCount', 'followingCount', 'isFollowing'));
     }
 
     public function edit()

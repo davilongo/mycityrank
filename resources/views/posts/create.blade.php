@@ -50,6 +50,14 @@
                 @error('image') <span class="error">{{ $message }}</span> @enderror
             </div>
 
+            <div class="form-group">
+                <label>Ubicación en el mapa <span class="label-optional">(opcional — haz clic para marcar)</span></label>
+                <div id="picker-map" class="map-picker"></div>
+                <input type="hidden" name="lat" id="lat">
+                <input type="hidden" name="lng" id="lng">
+                <p class="map-picker-hint" id="picker-hint">Sin ubicación seleccionada</p>
+            </div>
+
             <button type="submit" class="btn-primary">Publicar post</button>
         </form>
     </div>
@@ -58,5 +66,42 @@
         <a href="{{ route('posts.index') }}">← Volver al feed</a>
     </div>
 </div>
+
+@push('scripts')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    const map = L.map('picker-map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let marker = null;
+    const latInput  = document.getElementById('lat');
+    const lngInput  = document.getElementById('lng');
+    const hint      = document.getElementById('picker-hint');
+
+    map.on('click', function (e) {
+        const { lat, lng } = e.latlng;
+        latInput.value = lat.toFixed(7);
+        lngInput.value = lng.toFixed(7);
+        hint.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+            marker.on('dragend', function () {
+                const p = marker.getLatLng();
+                latInput.value = p.lat.toFixed(7);
+                lngInput.value = p.lng.toFixed(7);
+                hint.textContent = `📍 ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
+            });
+        }
+    });
+})();
+</script>
+@endpush
 
 @endsection

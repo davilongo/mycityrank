@@ -45,6 +45,16 @@
             </div>
 
             <div class="form-group">
+                <label>Ubicación en el mapa <span class="label-optional">(opcional — haz clic para marcar)</span></label>
+                <div id="picker-map" class="map-picker"></div>
+                <input type="hidden" name="lat" id="lat" value="{{ old('lat', $post->lat) }}">
+                <input type="hidden" name="lng" id="lng" value="{{ old('lng', $post->lng) }}">
+                <p class="map-picker-hint" id="picker-hint">
+                    {{ $post->lat ? '📍 ' . number_format($post->lat, 5) . ', ' . number_format($post->lng, 5) : 'Sin ubicación seleccionada' }}
+                </p>
+            </div>
+
+            <div class="form-group">
                 <label>Nueva imagen (opcional)</label>
                 @if($post->image)
                     <img src="{{ asset($post->image) }}" alt="Imagen actual"
@@ -62,5 +72,60 @@
         <a href="{{ route('posts.show', $post) }}">← Volver al post</a>
     </div>
 </div>
+
+@push('scripts')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    const existingLat = {{ $post->lat ?? 'null' }};
+    const existingLng = {{ $post->lng ?? 'null' }};
+
+    const center = existingLat ? [existingLat, existingLng] : [20, 0];
+    const zoom   = existingLat ? 10 : 2;
+
+    const map = L.map('picker-map').setView(center, zoom);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+    const hint     = document.getElementById('picker-hint');
+
+    let marker = existingLat
+        ? L.marker([existingLat, existingLng], { draggable: true }).addTo(map)
+        : null;
+
+    if (marker) {
+        marker.on('dragend', function () {
+            const p = marker.getLatLng();
+            latInput.value = p.lat.toFixed(7);
+            lngInput.value = p.lng.toFixed(7);
+            hint.textContent = `📍 ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
+        });
+    }
+
+    map.on('click', function (e) {
+        const { lat, lng } = e.latlng;
+        latInput.value = lat.toFixed(7);
+        lngInput.value = lng.toFixed(7);
+        hint.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+            marker.on('dragend', function () {
+                const p = marker.getLatLng();
+                latInput.value = p.lat.toFixed(7);
+                lngInput.value = p.lng.toFixed(7);
+                hint.textContent = `📍 ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
+            });
+        }
+    });
+})();
+</script>
+@endpush
 
 @endsection
