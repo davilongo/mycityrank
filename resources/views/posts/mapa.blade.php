@@ -19,15 +19,18 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    const posts = @json($posts->map(fn($p) => [
-        'lat'   => $p->lat,
-        'lng'   => $p->lng,
-        'title' => $p->title,
-        'url'   => route('posts.show', $p),
-        'image' => asset($p->image),
-        'user'  => $p->user->name ?? '',
-        'city'  => $p->ciudad->nombre ?? '',
-    ]));
+    @php
+        $mapData = $posts->map(fn($p) => [
+            'lat'   => $p->lat,
+            'lng'   => $p->lng,
+            'title' => $p->title,
+            'url'   => route('posts.show', $p),
+            'image' => asset($p->image),
+            'user'  => $p->user->name ?? '',
+            'city'  => $p->ciudad->nombre ?? '',
+        ]);
+    @endphp
+    const posts = @json($mapData);
 
     posts.forEach(function (p) {
         const popup = `

@@ -1501,3 +1501,67 @@ select.form-input { cursor: pointer; }
   .hero { padding: 48px 16px 56px; }
   .hero-subtitle { font-size: 14px; }
 }
+
+/* ===== AUTH PAGES ===== */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--dark-bg);
+}
+
+.auth-logo {
+  margin-bottom: 24px;
+}
+
+.auth-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--dark-card);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid #1e293b;
+}
+
+.auth-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.auth-remember {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.auth-remember a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.auth-footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
