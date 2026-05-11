@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Ciudad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,59 @@ class UserController extends Controller
         $isFollowing    = Auth::check() ? Auth::user()->isFollowing($user) : false;
 
         return view('users.show', compact('user', 'posts', 'followersCount', 'followingCount', 'isFollowing'));
+    }
+
+    public function search(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+
+        $users = User::where('name', 'LIKE', "%{$q}%")
+            ->withCount('posts')
+            ->orderByDesc('posts_count')
+            ->limit(6)
+            ->get(['id', 'name', 'avatar', 'bio']);
+
+        return response()->json($users->map(fn ($u) => [
+            'id'          => $u->id,
+            'name'        => $u->name,
+            'avatar'      => $u->avatar,
+            'posts_count' => $u->posts_count,
+            'url'         => route('users.show', $u),
+            'initial'     => mb_strtoupper(mb_substr($u->name, 0, 1)),
+        ]));
+    }
+
+    public function discover()
+    {
+        $me           = Auth::user();
+        $excludeIds   = $me->following()->pluck('users.id')->push($me->id);
+        $myCityIds    = $me->posts()->pluck('ciudad_id')->filter()->unique();
+
+        if ($myCityIds->isNotEmpty()) {
+            $suggested = User::whereHas('posts', fn ($q) => $q->whereIn('ciudad_id', $myCityIds))
+                ->whereNotIn('id', $excludeIds)
+                ->withCount([
+                    'posts',
+                    'followers',
+                    'posts as shared_posts_count' => fn ($q) => $q->whereIn('ciudad_id', $myCityIds),
+                ])
+                ->orderByDesc('shared_posts_count')
+                ->limit(24)
+                ->get();
+
+            $sharedCities = Ciudad::whereIn('id', $myCityIds)->pluck('nombre', 'id');
+        } else {
+            $suggested = User::whereNotIn('id', $excludeIds)
+                ->withCount(['posts', 'followers'])
+                ->having('posts_count', '>', 0)
+                ->orderByDesc('posts_count')
+                ->limit(24)
+                ->get();
+
+            $sharedCities = collect();
+        }
+
+        return view('users.discover', compact('suggested', 'sharedCities', 'myCityIds'));
     }
 
     public function edit()

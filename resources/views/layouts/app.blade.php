@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XploreFree</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=9">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=11">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
 <body>
@@ -26,9 +26,39 @@
                 </a>
             </div>
 
+            {{-- Buscador de usuarios --}}
+            <div x-data="userSearch()" class="nav-user-search" @click.outside="open = false">
+                <div class="nav-search-box">
+                    <span class="nav-search-icon">🔍</span>
+                    <input
+                        type="text"
+                        x-model="query"
+                        @input.debounce.250ms="search()"
+                        @keydown.escape="open = false"
+                        @focus="query.length >= 2 && search()"
+                        placeholder="Buscar personas..."
+                        class="nav-search-input"
+                        autocomplete="off"
+                    >
+                </div>
+                <div x-show="open" x-transition.opacity class="nav-search-dropdown">
+                    <template x-for="u in results" :key="u.id">
+                        <a :href="u.url" class="nav-search-item">
+                            <span class="nav-search-avatar" x-text="u.initial"></span>
+                            <span class="nav-search-name" x-text="u.name"></span>
+                            <span class="nav-search-count" x-text="u.posts_count + ' posts'"></span>
+                        </a>
+                    </template>
+                    <p x-show="results.length === 0 && query.length >= 2" class="nav-search-empty">
+                        Sin resultados
+                    </p>
+                </div>
+            </div>
+
             <div class="nav-actions">
                 @auth
                     <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">🏠 Feed</a>
+                    <a href="{{ route('users.discover') }}" class="nav-link {{ request()->routeIs('users.discover') ? 'active' : '' }}">👥 Descubrir</a>
                     <a href="{{ route('bookmarks.index') }}" class="nav-link {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">🔖 Guardados</a>
                     <a href="{{ route('notifications.index') }}" class="nav-link nav-bell {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                         🔔
@@ -70,5 +100,21 @@
     </div>
 
     @stack('scripts')
+
+    <script>
+    function userSearch() {
+        return {
+            query: '',
+            results: [],
+            open: false,
+            search() {
+                if (this.query.length < 2) { this.results = []; this.open = false; return; }
+                fetch('/users/buscar?q=' + encodeURIComponent(this.query))
+                    .then(r => r.json())
+                    .then(data => { this.results = data; this.open = data.length > 0; });
+            }
+        }
+    }
+    </script>
 </body>
 </html>

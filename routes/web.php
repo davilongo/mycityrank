@@ -22,7 +22,8 @@ Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')
 Route::get('/ciudades/buscar', [CiudadController::class, 'buscar'])->name('ciudades.buscar');
 Route::get('/ciudades/{ciudad}', [CiudadController::class, 'show'])->name('ciudades.show');
 
-// Perfiles de usuario
+// Perfiles de usuario (buscar y descubrir deben ir antes que {user})
+Route::get('/users/buscar', [UserController::class, 'search'])->name('users.search');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
 // Hashtags
@@ -51,6 +52,7 @@ Route::middleware('auth')->group(function () {
     // Seguidores
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
     Route::get('/feed', [FollowController::class, 'feed'])->name('feed');
+    Route::get('/descubrir', [UserController::class, 'discover'])->name('users.discover');
 
     // Notificaciones
     Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notifications.index');
