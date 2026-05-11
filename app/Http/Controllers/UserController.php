@@ -48,7 +48,11 @@ class UserController extends Controller
     {
         $me           = Auth::user();
         $excludeIds   = $me->following()->pluck('users.id')->push($me->id);
-        $myCityIds    = $me->posts()->pluck('ciudad_id')->filter()->unique();
+
+        // Ciudades donde he publicado + ciudades de los posts que he guardado (bookmarks)
+        $citiesFromPosts     = $me->posts()->pluck('ciudad_id');
+        $citiesFromBookmarks = $me->bookmarks()->join('posts', 'bookmarks.post_id', '=', 'posts.id')->pluck('posts.ciudad_id');
+        $myCityIds           = $citiesFromPosts->merge($citiesFromBookmarks)->filter()->unique();
 
         if ($myCityIds->isNotEmpty()) {
             $suggested = User::whereHas('posts', fn ($q) => $q->whereIn('ciudad_id', $myCityIds))
