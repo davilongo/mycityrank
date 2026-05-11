@@ -20,6 +20,7 @@ class Post extends Model
         '🛍️ Tienda & Mercado',
         '🏖️ Playa',
         '🎭 Ocio & Entretenimiento',
+        '🎉 Fiestas & Tradiciones',
         '🏨 Alojamiento',
         '💡 Joya Oculta',
     ];
