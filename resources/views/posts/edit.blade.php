@@ -3,9 +3,14 @@
 @section('contenido')
 
 <style>
-  body, .main-container {
-    background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important;
+  body { background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important; }
+  .main-container {
+    background: transparent !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
+  .post-form-wrap { width: 100%; }
 </style>
 
 <div class="post-form-wrap">
@@ -34,17 +39,30 @@
             </div>
 
             {{-- Categoría --}}
-            <div class="form-group">
+            <div class="form-group" x-data="{ sel: @json(old('category', $post->category)), open: false }">
                 <label>Categoría</label>
-                <div class="auth-cats" x-data="{ sel: @json(old('category', $post->category)) }">
-                    <input type="hidden" name="category" :value="sel">
-                    @foreach(\App\Models\Post::CATEGORIES as $cat)
-                        <button type="button"
-                                @click="sel = @json($cat)"
-                                :class="sel === @json($cat) ? 'auth-cat auth-cat--on' : 'auth-cat'">
-                            {{ $cat }}
-                        </button>
-                    @endforeach
+                <input type="hidden" name="category" :value="sel">
+                <button type="button" @click="open = true"
+                        class="cat-btn" :class="{ 'cat-btn--set': sel !== '' }">
+                    <span x-text="sel || 'Elige una categoría...'"></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div x-show="open" x-transition.opacity class="cat-overlay" @click.self="open = false">
+                    <div class="cat-modal">
+                        <div class="cat-modal-top">
+                            <span class="cat-modal-title">Elige una categoría</span>
+                            <button type="button" @click="open = false" class="cat-modal-close">✕</button>
+                        </div>
+                        <div class="cat-modal-grid">
+                            @foreach(\App\Models\Post::CATEGORIES as $cat)
+                                <button type="button" class="cat-modal-item"
+                                        :class="{ 'cat-modal-item--on': sel === @json($cat) }"
+                                        @click="sel = @json($cat); open = false">
+                                    {{ $cat }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 @error('category') <span class="error">{{ $message }}</span> @enderror
             </div>
