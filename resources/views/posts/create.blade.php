@@ -7,76 +7,100 @@
   .main-container { background: transparent !important; }
 </style>
 
-{{-- Wrapper con centrado garantizado vía inline style --}}
+@php
+$catDesc = [
+    '🍽️ Restaurante'           => 'Comida y cocina local',
+    '🍺 Bar & Copas'            => 'Bares y vida nocturna',
+    '☕ Café'                    => 'Cafeterías y pastelerías',
+    '🏛️ Monumento & Cultura'    => 'Historia y arquitectura',
+    '🌿 Parque & Naturaleza'    => 'Parques y al aire libre',
+    '🛍️ Tienda & Mercado'       => 'Mercados y comercios',
+    '🏖️ Playa'                  => 'Playas y costas',
+    '🎭 Ocio & Entretenimiento' => 'Cine y actividades',
+    '🎉 Fiestas & Tradiciones'  => 'Eventos y celebraciones',
+    '🏨 Alojamiento'            => 'Hoteles y hospedaje',
+    '💡 Joya Oculta'            => 'Lugares secretos',
+];
+@endphp
+
 <div style="width:100%; display:flex; justify-content:center; padding:0 16px 60px;">
-<div style="width:100%; max-width:620px;">
+<div class="create-form-wrap">
 
-    <h2 class="auth-title">Nueva publicación</h2>
+    <div class="create-form-header">
+        <a href="{{ route('posts.index') }}" class="create-form-back">&#8592;</a>
+        <div>
+            <h1 class="create-form-title">Crear publicación</h1>
+            <p class="create-form-subtitle">Comparte tu experiencia con la comunidad</p>
+        </div>
+    </div>
 
-    <div class="auth-card auth-card--wide">
-        <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data"
+          x-data="{ sel: @json(old('category', '')) }">
+        @csrf
 
-            {{-- Título + Ciudad --}}
-            <div class="auth-row-2">
-                <div class="form-group">
-                    <label for="title">Título</label>
-                    <input type="text" name="title" id="title"
-                           value="{{ old('title') }}" placeholder="Ej: La mejor pizzería de Nápoles" required>
-                    @error('title') <span class="error">{{ $message }}</span> @enderror
-                </div>
-                <div class="form-group">
-                    <label for="ciudad_nombre">Ciudad</label>
-                    <input type="text" name="ciudad_nombre" id="ciudad_nombre"
-                           value="{{ old('ciudad_nombre') }}" placeholder="París, Roma, Tokio..." required>
-                    @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
-                </div>
+        {{-- 1. Categoría --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">1</span>
+                <span class="form-section-title">Elige una categoría</span>
+                <p class="form-section-sub">Selecciona la categoría que mejor se adapte a tu publicación.</p>
             </div>
+            <input type="hidden" name="category" :value="sel">
+            <div class="cat-cards-grid">
+                @foreach(\App\Models\Post::CATEGORIES as $cat)
+                    @php [$icon, $name] = array_pad(explode(' ', $cat, 2), 2, ''); @endphp
+                    <button type="button" class="cat-card"
+                            :class="{ 'cat-card--on': sel === @json($cat) }"
+                            @click="sel = @json($cat)">
+                        <span class="cat-card-icon">{{ $icon }}</span>
+                        <span class="cat-card-name">{{ $name }}</span>
+                        <span class="cat-card-desc">{{ $catDesc[$cat] ?? '' }}</span>
+                    </button>
+                @endforeach
+            </div>
+            @error('category') <span class="error" style="display:block;margin-top:8px;">{{ $message }}</span> @enderror
+        </div>
 
-            {{-- Categoría --}}
-            <div class="form-group" x-data="{ sel: @json(old('category', '')), open: false }">
-                <label>Categoría</label>
-                <input type="hidden" name="category" :value="sel">
-                <button type="button" @click="open = true" class="cat-btn"
-                        :class="{ 'cat-btn--set': sel !== '' }">
-                    <span x-text="sel || 'Elige una categoría...'">Elige una categoría...</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <template x-teleport="body">
-                    <div x-show="open" x-transition.opacity class="cat-overlay"
-                         @click.self="open = false" @keydown.escape.window="open = false">
-                        <div class="cat-modal">
-                            <div class="cat-modal-top">
-                                <span class="cat-modal-title">Elige una categoría</span>
-                                <button type="button" @click="open = false" class="cat-modal-close">✕</button>
-                            </div>
-                            <div class="cat-modal-grid">
-                                @foreach(\App\Models\Post::CATEGORIES as $cat)
-                                    <button type="button" class="cat-modal-item"
-                                            :class="{ 'cat-modal-item--on': sel === @json($cat) }"
-                                            @click="sel = @json($cat); open = false">
-                                        {{ $cat }}
-                                    </button>
-                                @endforeach
-                            </div>
-                        </div>
+        {{-- 2. Detalles --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">2</span>
+                <span class="form-section-title">Cuéntanos los detalles</span>
+                <p class="form-section-sub">Un buen título y descripción ayudan a que otros descubran este lugar.</p>
+            </div>
+            <div class="form-section-body">
+                <div class="auth-row-2">
+                    <div class="form-group">
+                        <label for="title">Título</label>
+                        <input type="text" name="title" id="title"
+                               value="{{ old('title') }}" placeholder="Ej: La mejor pizzería de Nápoles" required>
+                        @error('title') <span class="error">{{ $message }}</span> @enderror
                     </div>
-                </template>
-                @error('category') <span class="error">{{ $message }}</span> @enderror
+                    <div class="form-group">
+                        <label for="ciudad_nombre">Ciudad</label>
+                        <input type="text" name="ciudad_nombre" id="ciudad_nombre"
+                               value="{{ old('ciudad_nombre') }}" placeholder="París, Roma, Tokio..." required>
+                        @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="content">Descripción</label>
+                    <textarea name="content" id="content"
+                              placeholder="Cuéntanos qué hace especial este lugar, cómo llegar, qué pedir... Usa #hashtags para que te encuentren."
+                              required>{{ old('content') }}</textarea>
+                    @error('content') <span class="error">{{ $message }}</span> @enderror
+                </div>
             </div>
+        </div>
 
-            {{-- Descripción --}}
-            <div class="form-group">
-                <label for="content">Descripción</label>
-                <textarea name="content" id="content"
-                          placeholder="Cuéntanos qué hace especial este lugar, cómo llegar, qué pedir... Usa #hashtags para que te encuentren."
-                          required>{{ old('content') }}</textarea>
-                @error('content') <span class="error">{{ $message }}</span> @enderror
+        {{-- 3. Fotos --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">3</span>
+                <span class="form-section-title">Añade imágenes</span>
+                <p class="form-section-sub">Las imágenes hacen tu publicación más atractiva. La primera será la portada · máx. 6.</p>
             </div>
-
-            {{-- Fotos --}}
-            <div class="form-group">
-                <label>Fotos <span class="auth-hint-label">(la primera será la portada · máx. 6)</span></label>
+            <div class="form-section-body">
                 <div class="auth-upload" x-data="{ count: 0, previews: [] }" @click="$refs.fi.click()">
                     <input x-ref="fi" type="file" name="images[]" accept="image/*" multiple required
                            style="display:none"
@@ -92,7 +116,7 @@
                     <template x-if="count === 0">
                         <div>
                             <div class="auth-upload-icon">📷</div>
-                            <p class="auth-upload-text">Haz clic para seleccionar fotos</p>
+                            <p class="auth-upload-text">Arrastra tus imágenes aquí o haz clic para seleccionar</p>
                             <p class="auth-upload-hint">JPG o PNG · máx. 8 MB · hasta 6 fotos</p>
                         </div>
                     </template>
@@ -117,21 +141,31 @@
                 @error('images') <span class="error">{{ $message }}</span> @enderror
                 @error('images.*') <span class="error">{{ $message }}</span> @enderror
             </div>
+        </div>
 
-            {{-- Mapa --}}
-            <div class="form-group">
-                <label>Ubicación en el mapa <span class="auth-hint-label">(opcional)</span></label>
+        {{-- 4. Mapa --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">4</span>
+                <span class="form-section-title">Ubicación en el mapa <span class="auth-hint-label">(opcional)</span></span>
+                <p class="form-section-sub">Marca la ubicación exacta para que otros puedan encontrarla fácilmente.</p>
+            </div>
+            <div class="form-section-body">
                 <div id="picker-map" class="map-picker"></div>
                 <input type="hidden" name="lat" id="lat">
                 <input type="hidden" name="lng" id="lng">
                 <p class="map-picker-hint" id="picker-hint">Haz clic en el mapa para marcar la ubicación</p>
             </div>
+        </div>
 
-            <button type="submit" class="btn-primary" style="margin-top:8px;">Publicar</button>
-        </form>
-    </div>
+        <button type="submit" class="btn-primary" style="width:100%;padding:15px;font-size:16px;margin-top:8px;">
+            Publicar
+        </button>
+    </form>
 
-    <p class="post-form-back"><a href="{{ route('posts.index') }}">← Volver al feed</a></p>
+    <p class="post-form-back" style="text-align:center;margin-top:20px;">
+        <a href="{{ route('posts.index') }}">← Volver al feed</a>
+    </p>
 
 </div>
 </div>
