@@ -148,6 +148,97 @@ body {
 
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
+/* ===== HAMBURGER & MOBILE MENU ===== */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  flex-shrink: 0;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #94a3b8;
+  border-radius: 2px;
+  transition: transform .22s ease, opacity .22s ease;
+  transform-origin: center;
+}
+.nav-hamburger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-mobile-menu {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: #0d1220;
+  border-bottom: 1px solid rgba(14,165,233,0.15);
+  z-index: 199;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.nav-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  text-align: left;
+}
+.nav-mobile-link:hover,
+.nav-mobile-link.active { background: rgba(14,165,233,0.08); color: #ffffff; }
+.nav-mobile-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 6px 0;
+}
+.nav-mobile-search {
+  padding: 4px 0 8px;
+  position: relative;
+}
+.nav-mobile-search .nav-search-box {
+  width: 100%;
+  max-width: none;
+}
+.nav-mobile-search .nav-search-dropdown {
+  position: static;
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .nav-hamburger { display: flex; }
+  .nav-menu { display: none !important; }
+  .nav-user-search { display: none !important; }
+  .nav-actions { display: none !important; }
+}
+
 /* ===== MAIN CONTAINER ===== */
 .main-container {
   max-width: 1200px;
