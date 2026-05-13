@@ -868,7 +868,7 @@ select.form-input { cursor: pointer; }
   border: 1.5px solid rgba(14,165,233,0.2);
   border-radius: 10px;
   padding: 13px 16px;
-  color: #475569;
+  color: #94a3b8;
   font-size: 15px;
   font-family: inherit;
   text-align: left;
@@ -876,12 +876,13 @@ select.form-input { cursor: pointer; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: border-color .2s, background .2s;
+  transition: border-color .2s, background .2s, color .2s;
 }
 .cat-btn--set { color: #f1f5f9; }
 .cat-btn:hover {
   border-color: var(--accent);
   background: rgba(14,165,233,0.08);
+  color: #f1f5f9;
 }
 
 /* Overlay del modal */
@@ -973,6 +974,12 @@ select.form-input { cursor: pointer; }
 .auth-upload:hover {
   border-color: rgba(14,165,233,0.75);
   background: rgba(14,165,233,0.09);
+}
+
+.auth-upload-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .auth-upload-text {

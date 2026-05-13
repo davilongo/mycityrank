@@ -4,16 +4,12 @@
 
 <style>
   body { background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important; }
-  .main-container {
-    background: transparent !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-  .post-form-wrap { width: 100%; }
+  .main-container { background: transparent !important; }
 </style>
 
-<div class="post-form-wrap">
+{{-- Wrapper con centrado garantizado vía inline style --}}
+<div style="width:100%; display:flex; justify-content:center; padding:0 16px 60px;">
+<div style="width:100%; max-width:620px;">
 
     <h2 class="auth-title">Nueva publicación</h2>
 
@@ -41,13 +37,14 @@
             <div class="form-group" x-data="{ sel: @json(old('category', '')), open: false }">
                 <label>Categoría</label>
                 <input type="hidden" name="category" :value="sel">
-                <button type="button" @click="open = true"
-                        class="cat-btn" :class="{ 'cat-btn--set': sel !== '' }">
-                    <span x-text="sel || 'Elige una categoría...'"></span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                <button type="button" @click="open = true" class="cat-btn"
+                        :class="{ 'cat-btn--set': sel !== '' }">
+                    <span x-text="sel || 'Elige una categoría...'">Elige una categoría...</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <template x-teleport="body">
-                    <div x-show="open" x-transition.opacity class="cat-overlay" @click.self="open = false" @keydown.escape.window="open = false">
+                    <div x-show="open" x-transition.opacity class="cat-overlay"
+                         @click.self="open = false" @keydown.escape.window="open = false">
                         <div class="cat-modal">
                             <div class="cat-modal-top">
                                 <span class="cat-modal-title">Elige una categoría</span>
@@ -94,6 +91,7 @@
                            ">
                     <template x-if="count === 0">
                         <div>
+                            <div class="auth-upload-icon">📷</div>
                             <p class="auth-upload-text">Haz clic para seleccionar fotos</p>
                             <p class="auth-upload-hint">JPG o PNG · máx. 8 MB · hasta 6 fotos</p>
                         </div>
@@ -135,6 +133,7 @@
 
     <p class="post-form-back"><a href="{{ route('posts.index') }}">← Volver al feed</a></p>
 
+</div>
 </div>
 
 @push('scripts')

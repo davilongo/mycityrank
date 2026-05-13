@@ -4,16 +4,11 @@
 
 <style>
   body { background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important; }
-  .main-container {
-    background: transparent !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-  .post-form-wrap { width: 100%; }
+  .main-container { background: transparent !important; }
 </style>
 
-<div class="post-form-wrap">
+<div style="width:100%; display:flex; justify-content:center; padding:0 16px 60px;">
+<div style="width:100%; max-width:620px;">
 
     <h2 class="auth-title">Editar publicación</h2>
 
@@ -131,6 +126,7 @@
 
     <p class="post-form-back"><a href="{{ route('posts.show', $post) }}">← Volver al post</a></p>
 
+</div>
 </div>
 
 @push('scripts')
