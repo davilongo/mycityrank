@@ -21,9 +21,11 @@ class PostController extends Controller
 
         $ciudadesPopulares = Ciudad::withCount('posts')
             ->having('posts_count', '>', 0)
-            ->withSum('posts as total_likes', 'id')
             ->orderBy('posts_count', 'desc')
-            ->with(['posts' => fn ($q) => $q->withCount('likes')->orderByDesc('likes_count')->limit(1)])
+            ->with(['posts' => fn ($q) => $q
+                ->orderByRaw('(SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) DESC')
+                ->limit(1)
+            ])
             ->limit(6)
             ->get();
 
