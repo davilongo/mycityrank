@@ -7,17 +7,20 @@ use App\Models\Ciudad;
 use App\Notifications\NewComment;
 use App\Notifications\NewPostInCity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['ciudad', 'user'])
-            ->withCount(['likes', 'comments'])
-            ->orderBy('id', 'desc')
-            ->paginate(9);
+        $query = Post::with(['ciudad', 'user'])->withCount(['likes', 'comments']);
+
+        if ($request->filled('categoria')) {
+            $query->where('category', $request->categoria);
+        }
+
+        $posts = $query->orderBy('id', 'desc')->paginate(9)->withQueryString();
 
         $ciudadesPopulares = Ciudad::withCount('posts')
             ->having('posts_count', '>', 0)
@@ -41,23 +44,25 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
-            'slug'          => 'required|string|max:255',
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
-            'image'         => 'required|image|max:4096',
+            'images'        => 'required|array|min:1|max:6',
+            'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
             'lng'           => 'nullable|numeric|between:-180,180',
         ]);
 
-        $path = $request->file('image')->store('public/images');
-        $url  = Storage::url($path);
+        $urls      = collect($request->file('images'))->map(fn ($f) => $this->compressAndStore($f))->values()->all();
+        $url       = $urls[0];
+        $extraUrls = count($urls) > 1 ? array_slice($urls, 1) : null;
 
-        $ciudad  = $this->resolveCiudad($validated['ciudad_nombre']);
-        $slug    = $validated['slug'];
-        $counter = 1;
+        $ciudad   = $this->resolveCiudad($validated['ciudad_nombre']);
+        $baseSlug = Str::slug($validated['title']);
+        $slug     = $baseSlug;
+        $counter  = 1;
         while (Post::where('slug', $slug)->exists()) {
-            $slug = $validated['slug'] . '-' . $counter++;
+            $slug = $baseSlug . '-' . $counter++;
         }
 
         $post = Post::create([
@@ -65,6 +70,7 @@ class PostController extends Controller
             'slug'      => $slug,
             'content'   => $validated['content'],
             'image'     => $url,
+            'images'    => $extraUrls,
             'category'  => $validated['category'],
             'ciudad_id' => $ciudad->id,
             'user_id'   => Auth::id(),
@@ -74,7 +80,6 @@ class PostController extends Controller
 
         $post->syncHashtags();
 
-        // Notificar a seguidores de la ciudad
         $post->ciudad->followers()
             ->where('users.id', '!=', Auth::id())
             ->each(fn ($follower) => $follower->notify(new NewPostInCity(Auth::user(), $post)));
@@ -98,27 +103,28 @@ class PostController extends Controller
     {
         abort_unless($this->canModify($post), 403);
 
-        $request->validate([
+        $validated = $request->validate([
             'title'         => 'required|string|max:255',
-            'slug'          => 'required|string|max:255|unique:posts,slug,' . $post->id,
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
-            'image'         => 'nullable|image|max:4096',
+            'images'        => 'nullable|array|max:6',
+            'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
             'lng'           => 'nullable|numeric|between:-180,180',
         ]);
 
-        $post->title    = $request->title;
-        $post->slug     = $request->slug;
-        $post->content  = $request->content;
-        $post->category = $request->category;
+        $post->title    = $validated['title'];
+        $post->content  = $validated['content'];
+        $post->category = $validated['category'];
 
-        if ($request->hasFile('image')) {
-            $post->image = Storage::url($request->file('image')->store('public/images'));
+        if ($request->hasFile('images')) {
+            $urls = collect($request->file('images'))->map(fn ($f) => $this->compressAndStore($f))->values()->all();
+            $post->image  = $urls[0];
+            $post->images = count($urls) > 1 ? array_slice($urls, 1) : null;
         }
 
-        $post->ciudad_id = $this->resolveCiudad($request->ciudad_nombre)->id;
+        $post->ciudad_id = $this->resolveCiudad($validated['ciudad_nombre'])->id;
         $post->lat = $request->lat ?: null;
         $post->lng = $request->lng ?: null;
         $post->save();
@@ -171,6 +177,35 @@ class PostController extends Controller
             ->get(['id', 'title', 'slug', 'image', 'lat', 'lng', 'user_id', 'ciudad_id']);
 
         return view('posts.mapa', compact('posts'));
+    }
+
+    private function compressAndStore(\Illuminate\Http\UploadedFile $file): string
+    {
+        $src  = imagecreatefromstring(file_get_contents($file->getRealPath()));
+        $w    = imagesx($src);
+        $h    = imagesy($src);
+        $maxW = 1200;
+
+        if ($w > $maxW) {
+            $newH = (int)($h * $maxW / $w);
+            $dest = imagecreatetruecolor($maxW, $newH);
+            imagefill($dest, 0, 0, imagecolorallocate($dest, 255, 255, 255));
+            imagecopyresampled($dest, $src, 0, 0, 0, 0, $maxW, $newH, $w, $h);
+            imagedestroy($src);
+        } else {
+            $dest = $src;
+        }
+
+        $dir = storage_path('app/public/images');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $filename = uniqid('img_') . '.jpg';
+        imagejpeg($dest, $dir . '/' . $filename, 80);
+        imagedestroy($dest);
+
+        return '/storage/images/' . $filename;
     }
 
     private function canModify(Post $post): bool

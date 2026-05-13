@@ -30,6 +30,7 @@ class Post extends Model
         'slug',
         'content',
         'image',
+        'images',
         'category',
         'ciudad_id',
         'user_id',
@@ -38,9 +39,16 @@ class Post extends Model
     ];
 
     protected $casts = [
-        'lat' => 'float',
-        'lng' => 'float',
+        'lat'    => 'float',
+        'lng'    => 'float',
+        'images' => 'array',
     ];
+
+    public function allImages(): array
+    {
+        $extras = $this->images ?? [];
+        return array_values(array_unique(array_merge([$this->image], $extras)));
+    }
 
     public function getRouteKeyName(): string
     {

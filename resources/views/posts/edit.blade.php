@@ -18,13 +18,6 @@
             </div>
 
             <div class="form-group">
-                <label for="slug">Slug (URL)</label>
-                <input type="text" name="slug" id="slug"
-                       value="{{ old('slug', $post->slug) }}" required>
-                @error('slug') <span class="error">{{ $message }}</span> @enderror
-            </div>
-
-            <div class="form-group">
                 <label for="category">Categoría</label>
                 <select name="category" id="category" required>
                     <option value="">— Elige una categoría —</option>
@@ -59,13 +52,20 @@
             </div>
 
             <div class="form-group">
-                <label>Nueva imagen (opcional)</label>
-                @if($post->image)
-                    <img src="{{ asset($post->image) }}" alt="Imagen actual"
-                         style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+                <label>Fotos actuales</label>
+                @php $allImgs = $post->allImages(); @endphp
+                @if($allImgs)
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+                        @foreach($allImgs as $img)
+                            <img src="{{ asset($img) }}" alt=""
+                                 style="width:80px; height:60px; object-fit:cover; border-radius:6px;">
+                        @endforeach
+                    </div>
                 @endif
-                <input type="file" name="image" id="image" accept="image/*">
-                @error('image') <span class="error">{{ $message }}</span> @enderror
+                <label for="images" style="margin-top:4px; display:block;">Subir nuevas fotos <span class="label-optional">(reemplaza todas las actuales, máx. 6)</span></label>
+                <input type="file" name="images[]" id="images" accept="image/*" multiple>
+                @error('images') <span class="error">{{ $message }}</span> @enderror
+                @error('images.*') <span class="error">{{ $message }}</span> @enderror
             </div>
 
             <button type="submit" class="btn-primary">Guardar cambios</button>

@@ -19,9 +19,21 @@
 
 <div class="post-detail-wrap">
 
-    <!-- Imagen -->
-    <div class="post-detail-image">
-        <img src="{{ asset($post->image) }}" alt="{{ $post->title }}">
+    <!-- Imagen / Carrusel -->
+    @php $allImgs = $post->allImages(); @endphp
+    <div class="post-detail-image" x-data='{ idx: 0, imgs: @json($allImgs) }'>
+        <img :src="imgs[idx]" alt="{{ $post->title }}">
+        <template x-if="imgs.length > 1">
+            <div class="carousel-controls">
+                <button @click="idx = (idx - 1 + imgs.length) % imgs.length" class="carousel-btn">&#8249;</button>
+                <div class="carousel-dots">
+                    <template x-for="(img, i) in imgs" :key="i">
+                        <span @click="idx = i" class="carousel-dot" :class="{ 'dot-active': i === idx }"></span>
+                    </template>
+                </div>
+                <button @click="idx = (idx + 1) % imgs.length" class="carousel-btn">&#8250;</button>
+            </div>
+        </template>
     </div>
 
     <!-- Panel derecho -->
@@ -29,12 +41,16 @@
 
         <div class="post-detail-header">
             <div class="post-detail-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</div>
-            <span class="post-detail-username">{{ $post->user->name ?? 'Anónimo' }}</span>
+            <a href="{{ route('users.show', $post->user) }}" class="post-detail-username">{{ $post->user->name ?? 'Anónimo' }}</a>
         </div>
 
         <div class="post-detail-meta">
-            <span class="meta-badge">📍 {{ $post->ciudad->nombre ?? 'Desconocida' }}</span>
-            <span class="meta-badge">🏷️ {{ $post->category }}</span>
+            @if($post->ciudad)
+                <a href="{{ route('ciudades.show', $post->ciudad) }}" class="meta-badge meta-badge-link">📍 {{ $post->ciudad->nombre }}</a>
+            @else
+                <span class="meta-badge">📍 Desconocida</span>
+            @endif
+            <a href="{{ route('posts.index', ['categoria' => $post->category]) }}" class="meta-badge meta-badge-link">🏷️ {{ $post->category }}</a>
             <span class="meta-badge">🕐 {{ $post->created_at->diffForHumans() }}</span>
         </div>
 

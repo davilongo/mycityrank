@@ -17,13 +17,6 @@
             </div>
 
             <div class="form-group">
-                <label for="slug">Slug (URL)</label>
-                <input type="text" name="slug" id="slug" value="{{ old('slug') }}"
-                       placeholder="una-semana-en-tokio" required>
-                @error('slug') <span class="error">{{ $message }}</span> @enderror
-            </div>
-
-            <div class="form-group">
                 <label for="category">Categoría</label>
                 <select name="category" id="category" required>
                     <option value="">— Elige una categoría —</option>
@@ -49,9 +42,10 @@
             </div>
 
             <div class="form-group">
-                <label for="image">Imagen</label>
-                <input type="file" name="image" id="image" accept="image/*" required>
-                @error('image') <span class="error">{{ $message }}</span> @enderror
+                <label for="images">Fotos <span class="label-optional">(máx. 6, la primera será la portada)</span></label>
+                <input type="file" name="images[]" id="images" accept="image/*" multiple required>
+                @error('images') <span class="error">{{ $message }}</span> @enderror
+                @error('images.*') <span class="error">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">
