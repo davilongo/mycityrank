@@ -35,7 +35,7 @@ $catDesc = [
     </div>
 
     <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data"
-          x-data="{ sel: @json(old('category', '')) }">
+          x-data='{ "sel": {!! json_encode(old("category", "")) !!} }'>
         @csrf
 
         {{-- 1. Categoría --}}
@@ -49,9 +49,9 @@ $catDesc = [
             <div class="cat-cards-grid">
                 @foreach(\App\Models\Post::CATEGORIES as $cat)
                     @php [$icon, $name] = array_pad(explode(' ', $cat, 2), 2, ''); @endphp
-                    <button type="button" class="cat-card"
-                            :class="{ 'cat-card--on': sel === @json($cat) }"
-                            @click="sel = @json($cat)">
+                    <button type="button" class="cat-card" data-cat="{{ $cat }}"
+                            :class="{ 'cat-card--on': sel === $el.dataset.cat }"
+                            @click="sel = $el.dataset.cat">
                         <span class="cat-card-icon">{{ $icon }}</span>
                         <span class="cat-card-name">{{ $name }}</span>
                         <span class="cat-card-desc">{{ $catDesc[$cat] ?? '' }}</span>
