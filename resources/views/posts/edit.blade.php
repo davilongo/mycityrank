@@ -113,20 +113,40 @@ $catDesc = [
                     </div>
                 @endif
                 {{-- Nueva selección --}}
-                <div class="auth-upload" x-data="{ count: 0 }" @click="$refs.fi.click()">
+                <div class="auth-upload" x-data="{
+                        count: 0,
+                        busy: false,
+                        async pick(e) {
+                            const files = Array.from(e.target.files).slice(0, 6);
+                            if (!files.length) return;
+                            this.busy = true; this.count = 0;
+                            const done = await Promise.all(files.map(f => compressImg(f)));
+                            const dt = new DataTransfer();
+                            done.forEach(f => dt.items.add(f));
+                            this.$refs.fi.files = dt.files;
+                            this.count = done.length;
+                            this.busy = false;
+                        }
+                    }" @click="!busy && $refs.fi.click()">
                     <input x-ref="fi" type="file" name="images[]" accept="image/*" multiple
-                           style="display:none" @change="count = $event.target.files.length">
-                    <template x-if="count === 0">
+                           style="display:none" @change="pick($event)">
+                    <template x-if="busy">
+                        <div>
+                            <div class="auth-upload-icon">⏳</div>
+                            <p class="auth-upload-text">Optimizando imágenes...</p>
+                        </div>
+                    </template>
+                    <template x-if="!busy && count === 0">
                         <div>
                             <div class="auth-upload-icon">📷</div>
                             <p class="auth-upload-text">Haz clic para seleccionar nuevas fotos</p>
-                            <p class="auth-upload-hint">JPG o PNG · máx. 8 MB</p>
+                            <p class="auth-upload-hint">JPG o PNG · hasta 6 fotos</p>
                         </div>
                     </template>
-                    <template x-if="count > 0">
+                    <template x-if="!busy && count > 0">
                         <div>
                             <p class="auth-upload-text"
-                               x-text="count + (count === 1 ? ' foto seleccionada' : ' fotos seleccionadas')"></p>
+                               x-text="count + (count === 1 ? ' foto lista ✓' : ' fotos listas ✓')"></p>
                             <p class="auth-upload-hint">Haz clic para cambiar la selección</p>
                         </div>
                     </template>

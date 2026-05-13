@@ -101,26 +101,40 @@ $catDesc = [
                 <p class="form-section-sub">Las imágenes hacen tu publicación más atractiva. La primera será la portada · máx. 6.</p>
             </div>
             <div class="form-section-body">
-                <div class="auth-upload" x-data="{ count: 0, previews: [] }" @click="$refs.fi.click()">
+                <div class="auth-upload" x-data="{
+                        count: 0,
+                        previews: [],
+                        busy: false,
+                        async pick(e) {
+                            const files = Array.from(e.target.files).slice(0, 6);
+                            if (!files.length) return;
+                            this.busy = true; this.count = 0; this.previews = [];
+                            const done = await Promise.all(files.map(f => compressImg(f)));
+                            const dt = new DataTransfer();
+                            done.forEach(f => dt.items.add(f));
+                            this.$refs.fi.files = dt.files;
+                            this.previews = done.map(f => URL.createObjectURL(f));
+                            this.count = done.length;
+                            this.busy = false;
+                        }
+                    }" @click="!busy && $refs.fi.click()">
                     <input x-ref="fi" type="file" name="images[]" accept="image/*" multiple required
-                           style="display:none"
-                           @change="
-                               count = $event.target.files.length;
-                               previews = [];
-                               Array.from($event.target.files).slice(0,6).forEach(f => {
-                                   const r = new FileReader();
-                                   r.onload = e => previews.push(e.target.result);
-                                   r.readAsDataURL(f);
-                               });
-                           ">
-                    <template x-if="count === 0">
+                           style="display:none" @change="pick($event)">
+                    <template x-if="busy">
+                        <div>
+                            <div class="auth-upload-icon">⏳</div>
+                            <p class="auth-upload-text">Optimizando imágenes...</p>
+                            <p class="auth-upload-hint">Un momento, se están comprimiendo</p>
+                        </div>
+                    </template>
+                    <template x-if="!busy && count === 0">
                         <div>
                             <div class="auth-upload-icon">📷</div>
                             <p class="auth-upload-text">Arrastra tus imágenes aquí o haz clic para seleccionar</p>
-                            <p class="auth-upload-hint">JPG o PNG · máx. 8 MB · hasta 6 fotos</p>
+                            <p class="auth-upload-hint">JPG o PNG · hasta 6 fotos</p>
                         </div>
                     </template>
-                    <template x-if="count > 0">
+                    <template x-if="!busy && count > 0">
                         <div @click.stop>
                             <div class="auth-upload-previews">
                                 <template x-for="(src, i) in previews" :key="i">
@@ -131,7 +145,7 @@ $catDesc = [
                                 </template>
                             </div>
                             <p class="auth-upload-hint" style="margin-top:10px;"
-                               x-text="count + (count === 1 ? ' foto seleccionada' : ' fotos seleccionadas')"></p>
+                               x-text="count + (count === 1 ? ' foto lista para subir ✓' : ' fotos listas para subir ✓')"></p>
                             <button type="button" class="auth-upload-change" @click="$refs.fi.click()">
                                 Cambiar selección
                             </button>
