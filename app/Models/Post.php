@@ -11,6 +11,29 @@ class Post extends Model
 
     protected $table = 'posts';
 
+    const TAGS = [
+        '🌿 Ambiente tranquilo',
+        '👨‍👩‍👧 Ideal para familias',
+        '🐾 Apta para mascotas',
+        '♿ Accesible',
+        '📸 Fotogénico',
+        '💰 Precio económico',
+        '🚗 Parking cercano',
+        '☀️ Terraza exterior',
+        '📶 Wifi gratis',
+        '🎵 Música en vivo',
+        '🌊 Vistas al mar',
+        '🏔️ Vistas panorámicas',
+        '🍷 Ambiente romántico',
+        '👥 Ideal para grupos',
+        '🕐 Abierto hasta tarde',
+        '🎒 Para viajeros',
+        '🌙 Vida nocturna',
+        '🥘 Cocina local',
+        '🏊 Deportes acuáticos',
+        '⭐ Muy recomendado',
+    ];
+
     const CATEGORIES = [
         '🍽️ Restaurante',
         '🍺 Bar & Copas',
@@ -33,6 +56,7 @@ class Post extends Model
         'images',
         'category',
         'place_name',
+        'tags',
         'ciudad_id',
         'user_id',
         'lat',
@@ -43,6 +67,7 @@ class Post extends Model
         'lat'    => 'float',
         'lng'    => 'float',
         'images' => 'array',
+        'tags'   => 'array',
     ];
 
     public function allImages(): array

@@ -184,6 +184,26 @@ $catDesc = [
             </div>
         </div>
 
+        {{-- 5. Características --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">5</span>
+                <span class="form-section-title">Características del lugar <span class="auth-hint-label">(opcional)</span></span>
+                <p class="form-section-sub">Selecciona las que mejor describen este sitio.</p>
+            </div>
+            <div class="form-section-body">
+                <div class="tags-picker-grid">
+                    @foreach(\App\Models\Post::TAGS as $tag)
+                        <label class="tag-chip-pick">
+                            <input type="checkbox" name="tags[]" value="{{ $tag }}"
+                                   {{ in_array($tag, old('tags', $post->tags ?? [])) ? 'checked' : '' }}>
+                            <span>{{ $tag }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
         <button type="submit" class="btn-primary" style="width:100%;padding:15px;font-size:16px;margin-top:8px;">
             Guardar cambios
         </button>

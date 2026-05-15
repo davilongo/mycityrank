@@ -83,12 +83,6 @@ $catDesc = [
                         @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="place_name">Nombre del lugar <span class="auth-hint-label">(opcional · sitúa el mapa automáticamente)</span></label>
-                    <input type="text" name="place_name" id="place_name"
-                           value="{{ old('place_name') }}" placeholder="Ej: Catedral de Sevilla, Bar El Copo...">
-                    @error('place_name') <span class="error">{{ $message }}</span> @enderror
-                </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label for="content">Descripción</label>
                     <textarea name="content" id="content"
@@ -171,16 +165,41 @@ $catDesc = [
                 <p class="form-section-sub">Marca la ubicación exacta para que otros puedan encontrarla fácilmente.</p>
             </div>
             <div class="form-section-body">
-                <div class="map-search-wrap">
-                    <input type="text" id="map-search" class="map-search-input"
-                           placeholder="Buscar lugar... ej: Catedral de Sevilla">
-                    <button type="button" class="map-search-btn" id="map-search-btn">Buscar</button>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label for="place_name">Nombre del lugar <span class="auth-hint-label">(opcional)</span></label>
+                    <div class="map-search-wrap" style="margin-bottom:0;">
+                        <input type="text" name="place_name" id="place_name" class="map-search-input"
+                               value="{{ old('place_name') }}"
+                               placeholder="Ej: Catedral de Sevilla, Bar El Copo...">
+                        <button type="button" class="map-search-btn" id="map-search-btn">Buscar</button>
+                    </div>
+                    @error('place_name') <span class="error">{{ $message }}</span> @enderror
                 </div>
                 <div id="map-search-results" class="map-search-results"></div>
                 <div id="picker-map" class="map-picker"></div>
                 <input type="hidden" name="lat" id="lat">
                 <input type="hidden" name="lng" id="lng">
-                <p class="map-picker-hint" id="picker-hint">Busca un lugar arriba o haz clic en el mapa</p>
+                <p class="map-picker-hint" id="picker-hint">Escribe el nombre y pulsa Buscar, o haz clic en el mapa</p>
+            </div>
+        </div>
+
+        {{-- 5. Características --}}
+        <div class="form-section">
+            <div class="form-section-hd">
+                <span class="form-section-num">5</span>
+                <span class="form-section-title">Características del lugar <span class="auth-hint-label">(opcional)</span></span>
+                <p class="form-section-sub">Selecciona las que mejor describen este sitio.</p>
+            </div>
+            <div class="form-section-body">
+                <div class="tags-picker-grid">
+                    @foreach(\App\Models\Post::TAGS as $tag)
+                        <label class="tag-chip-pick">
+                            <input type="checkbox" name="tags[]" value="{{ $tag }}"
+                                   {{ in_array($tag, old('tags', [])) ? 'checked' : '' }}>
+                            <span>{{ $tag }}</span>
+                        </label>
+                    @endforeach
+                </div>
             </div>
         </div>
 
@@ -232,13 +251,17 @@ $catDesc = [
     });
 
     // Geocoding con Nominatim
-    const searchInput  = document.getElementById('map-search');
-    const searchBtn    = document.getElementById('map-search-btn');
+    const searchInput   = document.getElementById('place_name');
+    const searchBtn     = document.getElementById('map-search-btn');
     const searchResults = document.getElementById('map-search-results');
     let geoResults = [];
 
     async function geocode(q) {
-        if (!q) q = searchInput.value.trim();
+        if (!q) {
+            const ciudad = document.getElementById('ciudad_nombre')?.value.trim() || '';
+            const place  = searchInput.value.trim();
+            q = ciudad ? `${place}, ${ciudad}` : place;
+        }
         if (!q) return;
         searchBtn.textContent = '...';
         searchResults.style.display = 'none';
@@ -280,19 +303,9 @@ $catDesc = [
         const item = e.target.closest('.map-search-item');
         if (item) applyResult(geoResults[parseInt(item.dataset.i)]);
     });
-    // Auto-geocoding desde el campo "Nombre del lugar"
-    const placeField = document.getElementById('place_name');
-    if (placeField) {
-        placeField.addEventListener('blur', function () {
-            const place  = this.value.trim();
-            const ciudad = document.getElementById('ciudad_nombre')?.value.trim() || '';
-            const q = place ? (ciudad ? `${place}, ${ciudad}` : place) : '';
-            if (q) geocode(q);
-        });
-    }
-
-    searchBtn.addEventListener('click', () => geocode(searchInput.value.trim()));
-    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); geocode(searchInput.value.trim()); } });
+    searchBtn.addEventListener('click', () => geocode());
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); geocode(); } });
+    searchInput.addEventListener('blur', () => { if (searchInput.value.trim()) geocode(); });
     document.addEventListener('click', e => {
         if (!searchResults.contains(e.target) && e.target !== searchInput && e.target !== searchBtn)
             searchResults.style.display = 'none';

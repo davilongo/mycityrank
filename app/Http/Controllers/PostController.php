@@ -52,6 +52,8 @@ class PostController extends Controller
             'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
             'lng'           => 'nullable|numeric|between:-180,180',
+            'tags'          => 'nullable|array|max:20',
+            'tags.*'        => 'string|max:60',
         ]);
 
         $urls      = collect($request->file('images'))->map(fn ($f) => $this->compressAndStore($f))->values()->all();
@@ -74,6 +76,7 @@ class PostController extends Controller
             'images'     => $extraUrls,
             'category'   => $validated['category'],
             'place_name' => $validated['place_name'] ?? null,
+            'tags'       => $validated['tags'] ?? null,
             'ciudad_id'  => $ciudad->id,
             'user_id'    => Auth::id(),
             'lat'        => $validated['lat'] ?? null,
@@ -115,10 +118,13 @@ class PostController extends Controller
             'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
             'lng'           => 'nullable|numeric|between:-180,180',
+            'tags'          => 'nullable|array|max:20',
+            'tags.*'        => 'string|max:60',
         ]);
 
         $post->title      = $validated['title'];
         $post->place_name = $validated['place_name'] ?? null;
+        $post->tags       = $validated['tags'] ?? null;
         $post->content    = $validated['content'];
         $post->category   = $validated['category'];
 
