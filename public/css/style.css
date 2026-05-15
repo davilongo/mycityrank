@@ -2413,9 +2413,18 @@ select.form-input { cursor: pointer; }
   .post-detail-image img { height: 300px; max-height: 300px; }
   .post-detail-side { border-left: none; border-top: 1px solid var(--border); max-height: none; }
   .post-detail-wrap { min-height: 0; }
-  .pd-wrap { grid-template-columns: 1fr; }
-  .pd-sidebar { order: -1; }
-  .pd-user-card { display: none; }
+  /* pd-main y pd-sidebar se "disuelven" — sus hijos son flex items directos de pd-wrap */
+  .pd-wrap        { display: flex; flex-direction: column; gap: 12px; }
+  .pd-main,
+  .pd-sidebar     { display: contents; }
+  /* Orden móvil: fotos → info usuario → titulo/desc → características → acciones → comentarios → mapa */
+  .pd-gallery     { order: 1; }
+  .pd-user-card   { order: 2; }
+  .pd-content     { order: 3; }
+  .pd-info-card   { order: 4; }
+  .pd-actions-bar { order: 5; }
+  .pd-comments    { order: 6; }
+  .pd-map-card    { order: 7; }
 }
 
 @media (max-width: 600px) {
