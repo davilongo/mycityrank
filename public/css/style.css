@@ -1632,6 +1632,62 @@ select.form-input { cursor: pointer; }
   margin-top: 4px;
 }
 
+/* Map geocoding search */
+.map-search-wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.map-search-input {
+  flex: 1;
+  background: rgba(15,23,42,0.8);
+  border: 1px solid rgba(14,165,233,0.2);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+.map-search-input::placeholder { color: #475569; }
+.map-search-input:focus { border-color: rgba(14,165,233,0.6); }
+.map-search-btn {
+  padding: 10px 18px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.map-search-btn:hover { background: var(--accent-dark); }
+.map-search-results {
+  display: none;
+  background: #0d1b2e;
+  border: 1px solid rgba(14,165,233,0.22);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.map-search-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #cbd5e1;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background .12s;
+}
+.map-search-item:last-child { border-bottom: none; }
+.map-search-item:hover { background: rgba(14,165,233,0.1); color: #fff; }
+.map-search-empty {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #64748b;
+}
+
 /* Map picker (create/edit forms) */
 .map-picker {
   width: 100%;

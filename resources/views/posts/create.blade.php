@@ -165,10 +165,16 @@ $catDesc = [
                 <p class="form-section-sub">Marca la ubicación exacta para que otros puedan encontrarla fácilmente.</p>
             </div>
             <div class="form-section-body">
+                <div class="map-search-wrap">
+                    <input type="text" id="map-search" class="map-search-input"
+                           placeholder="Buscar lugar... ej: Catedral de Sevilla">
+                    <button type="button" class="map-search-btn" id="map-search-btn">Buscar</button>
+                </div>
+                <div id="map-search-results" class="map-search-results"></div>
                 <div id="picker-map" class="map-picker"></div>
                 <input type="hidden" name="lat" id="lat">
                 <input type="hidden" name="lng" id="lng">
-                <p class="map-picker-hint" id="picker-hint">Haz clic en el mapa para marcar la ubicación</p>
+                <p class="map-picker-hint" id="picker-hint">Busca un lugar arriba o haz clic en el mapa</p>
             </div>
         </div>
 
@@ -197,15 +203,15 @@ $catDesc = [
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');
     const hint     = document.getElementById('picker-hint');
-    map.on('click', function (e) {
-        const { lat, lng } = e.latlng;
+
+    function placeMarker(lat, lng) {
         latInput.value = lat.toFixed(7);
         lngInput.value = lng.toFixed(7);
         hint.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         if (marker) {
-            marker.setLatLng(e.latlng);
+            marker.setLatLng([lat, lng]);
         } else {
-            marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
             marker.on('dragend', function () {
                 const p = marker.getLatLng();
                 latInput.value = p.lat.toFixed(7);
@@ -213,6 +219,66 @@ $catDesc = [
                 hint.textContent = `📍 ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
             });
         }
+    }
+
+    map.on('click', function (e) {
+        placeMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Geocoding con Nominatim
+    const searchInput  = document.getElementById('map-search');
+    const searchBtn    = document.getElementById('map-search-btn');
+    const searchResults = document.getElementById('map-search-results');
+    let geoResults = [];
+
+    async function geocode() {
+        const q = searchInput.value.trim();
+        if (!q) return;
+        searchBtn.textContent = '...';
+        searchResults.style.display = 'none';
+        try {
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&accept-language=es`,
+                { headers: { 'Accept-Language': 'es' } }
+            );
+            const data = await res.json();
+            searchBtn.textContent = 'Buscar';
+            if (!data.length) {
+                searchResults.innerHTML = '<div class="map-search-empty">Sin resultados — prueba con otro nombre</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+            if (data.length === 1) {
+                applyResult(data[0]);
+                return;
+            }
+            geoResults = data;
+            searchResults.innerHTML = data.map((r, i) =>
+                `<div class="map-search-item" data-i="${i}">${r.display_name}</div>`
+            ).join('');
+            searchResults.style.display = 'block';
+        } catch {
+            searchBtn.textContent = 'Buscar';
+        }
+    }
+
+    function applyResult(r) {
+        const lat = parseFloat(r.lat), lng = parseFloat(r.lon);
+        map.flyTo([lat, lng], 16);
+        placeMarker(lat, lng);
+        searchResults.style.display = 'none';
+        searchInput.value = r.display_name.split(',')[0];
+    }
+
+    searchResults.addEventListener('click', function (e) {
+        const item = e.target.closest('.map-search-item');
+        if (item) applyResult(geoResults[parseInt(item.dataset.i)]);
+    });
+    searchBtn.addEventListener('click', geocode);
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); geocode(); } });
+    document.addEventListener('click', e => {
+        if (!searchResults.contains(e.target) && e.target !== searchInput && e.target !== searchBtn)
+            searchResults.style.display = 'none';
     });
 })();
 </script>
