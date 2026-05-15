@@ -83,6 +83,12 @@ $catDesc = [
                         @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="place_name">Nombre del lugar <span class="auth-hint-label">(opcional · sitúa el mapa automáticamente)</span></label>
+                    <input type="text" name="place_name" id="place_name"
+                           value="{{ old('place_name') }}" placeholder="Ej: Catedral de Sevilla, Bar El Copo...">
+                    @error('place_name') <span class="error">{{ $message }}</span> @enderror
+                </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label for="content">Descripción</label>
                     <textarea name="content" id="content"
@@ -231,8 +237,8 @@ $catDesc = [
     const searchResults = document.getElementById('map-search-results');
     let geoResults = [];
 
-    async function geocode() {
-        const q = searchInput.value.trim();
+    async function geocode(q) {
+        if (!q) q = searchInput.value.trim();
         if (!q) return;
         searchBtn.textContent = '...';
         searchResults.style.display = 'none';
@@ -274,8 +280,19 @@ $catDesc = [
         const item = e.target.closest('.map-search-item');
         if (item) applyResult(geoResults[parseInt(item.dataset.i)]);
     });
-    searchBtn.addEventListener('click', geocode);
-    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); geocode(); } });
+    // Auto-geocoding desde el campo "Nombre del lugar"
+    const placeField = document.getElementById('place_name');
+    if (placeField) {
+        placeField.addEventListener('blur', function () {
+            const place  = this.value.trim();
+            const ciudad = document.getElementById('ciudad_nombre')?.value.trim() || '';
+            const q = place ? (ciudad ? `${place}, ${ciudad}` : place) : '';
+            if (q) geocode(q);
+        });
+    }
+
+    searchBtn.addEventListener('click', () => geocode(searchInput.value.trim()));
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); geocode(searchInput.value.trim()); } });
     document.addEventListener('click', e => {
         if (!searchResults.contains(e.target) && e.target !== searchInput && e.target !== searchBtn)
             searchResults.style.display = 'none';

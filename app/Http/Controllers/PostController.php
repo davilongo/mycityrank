@@ -44,6 +44,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
+            'place_name'    => 'nullable|string|max:255',
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
@@ -66,16 +67,17 @@ class PostController extends Controller
         }
 
         $post = Post::create([
-            'title'     => $validated['title'],
-            'slug'      => $slug,
-            'content'   => $validated['content'],
-            'image'     => $url,
-            'images'    => $extraUrls,
-            'category'  => $validated['category'],
-            'ciudad_id' => $ciudad->id,
-            'user_id'   => Auth::id(),
-            'lat'       => $validated['lat'] ?? null,
-            'lng'       => $validated['lng'] ?? null,
+            'title'      => $validated['title'],
+            'slug'       => $slug,
+            'content'    => $validated['content'],
+            'image'      => $url,
+            'images'     => $extraUrls,
+            'category'   => $validated['category'],
+            'place_name' => $validated['place_name'] ?? null,
+            'ciudad_id'  => $ciudad->id,
+            'user_id'    => Auth::id(),
+            'lat'        => $validated['lat'] ?? null,
+            'lng'        => $validated['lng'] ?? null,
         ]);
 
         $post->syncHashtags();
@@ -105,6 +107,7 @@ class PostController extends Controller
 
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
+            'place_name'    => 'nullable|string|max:255',
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
@@ -114,9 +117,10 @@ class PostController extends Controller
             'lng'           => 'nullable|numeric|between:-180,180',
         ]);
 
-        $post->title    = $validated['title'];
-        $post->content  = $validated['content'];
-        $post->category = $validated['category'];
+        $post->title      = $validated['title'];
+        $post->place_name = $validated['place_name'] ?? null;
+        $post->content    = $validated['content'];
+        $post->category   = $validated['category'];
 
         if ($request->hasFile('images')) {
             $urls = collect($request->file('images'))->map(fn ($f) => $this->compressAndStore($f))->values()->all();

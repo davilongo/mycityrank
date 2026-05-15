@@ -32,6 +32,7 @@ class Post extends Model
         'image',
         'images',
         'category',
+        'place_name',
         'ciudad_id',
         'user_id',
         'lat',
