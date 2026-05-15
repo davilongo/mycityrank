@@ -77,33 +77,20 @@
         @endauth
     </div>
 @else
-    <ul class="posts-grid" style="margin-top:24px;">
+    <ul class="city-posts-grid">
         @foreach($posts as $post)
-            <li class="post-card">
-                <a href="{{ route('posts.show', $post) }}">
-                    <div class="card-image-wrap">
-                        <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
-                    </div>
-                </a>
-                <div class="card-body">
-                    <a href="{{ route('posts.show', $post) }}">
-                        <h3 class="card-title">{{ $post->title }}</h3>
-                    </a>
-                    <div class="card-row">
-                        <span class="card-category">{{ $post->category }}</span>
-                        <div class="card-stats">
+            <li>
+                <a href="{{ route('posts.show', $post) }}" class="city-post-card">
+                    <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                    <div class="city-post-card-overlay">
+                        <div class="city-post-card-cat">{{ $post->category }}</div>
+                        <div class="city-post-card-title">{{ $post->title }}</div>
+                        <div class="city-post-card-stats">
                             <span>❤️ {{ $post->likes_count }}</span>
                             <span>💬 {{ $post->comments_count }}</span>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <a href="{{ route('users.show', $post->user) }}" class="card-author">
-                            <span class="card-author-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</span>
-                            {{ $post->user->name ?? 'Anónimo' }}
-                        </a>
-                        <span class="card-date">{{ $post->created_at->diffForHumans() }}</span>
-                    </div>
-                </div>
+                </a>
             </li>
         @endforeach
     </ul>
