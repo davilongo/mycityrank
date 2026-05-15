@@ -188,25 +188,41 @@
                 @endauth
             </div>
 
-            {{-- Map card --}}
+            {{-- Map card (collapsible) --}}
             @if($post->lat && $post->lng)
-                <div class="pd-map-card">
-                    <div class="pd-map-header">📍 Ubicación</div>
-                    @if($post->place_name)
-                        <div class="pd-place-label">📌 {{ $post->place_name }}</div>
-                    @elseif($post->ciudad)
-                        <div class="pd-place-label">📌 {{ $post->ciudad->nombre }}</div>
-                    @endif
-                    <div id="post-map" class="pd-map-inner"></div>
-                    <div class="pd-map-btns">
-                        <a href="https://www.openstreetmap.org/?mlat={{ $post->lat }}&mlon={{ $post->lng }}&zoom=16"
-                           target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--outline">
-                            ⛶ Ver mapa
-                        </a>
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $post->lat }},{{ $post->lng }}"
-                           target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--primary">
-                            🧭 Cómo llegar
-                        </a>
+                <div class="pd-map-card"
+                     x-data="{ open: false }"
+                     @open-map.window="open = true; $nextTick(() => window.postMap && window.postMap.invalidateSize())">
+                    <button class="pd-map-toggle"
+                            @click="open = !open; if(open) $nextTick(() => window.postMap && window.postMap.invalidateSize())">
+                        <span class="pd-map-toggle-label">
+                            📍
+                            @if($post->place_name)
+                                {{ $post->place_name }}
+                            @elseif($post->ciudad)
+                                {{ $post->ciudad->nombre }}
+                            @else
+                                Ubicación
+                            @endif
+                        </span>
+                        <svg class="pd-map-chevron" :class="{ 'pd-map-chevron--open': open }"
+                             width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                        <div id="post-map" class="pd-map-inner"></div>
+                        <div class="pd-map-btns">
+                            <a href="https://www.openstreetmap.org/?mlat={{ $post->lat }}&mlon={{ $post->lng }}&zoom=16"
+                               target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--outline">
+                                ⛶ Ver mapa
+                            </a>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination={{ $post->lat }},{{ $post->lng }}"
+                               target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--primary">
+                                🧭 Cómo llegar
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -240,19 +256,17 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-(function () {
-    const map = L.map('post-map', { zoomControl: false, scrollWheelZoom: false })
-        .setView([{{ $post->lat }}, {{ $post->lng }}], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-    const marker = L.marker([{{ $post->lat }}, {{ $post->lng }}]).addTo(map);
-    @if($post->place_name)
-        marker.bindPopup('{{ e($post->place_name) }}').openPopup();
-    @elseif($post->ciudad)
-        marker.bindPopup('{{ e($post->ciudad->nombre ?? '') }}').openPopup();
-    @endif
-})();
+window.postMap = L.map('post-map', { zoomControl: false, scrollWheelZoom: false })
+    .setView([{{ $post->lat }}, {{ $post->lng }}], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(window.postMap);
+const marker = L.marker([{{ $post->lat }}, {{ $post->lng }}]).addTo(window.postMap);
+@if($post->place_name)
+    marker.bindPopup('{{ e($post->place_name) }}').openPopup();
+@elseif($post->ciudad)
+    marker.bindPopup('{{ e($post->ciudad->nombre ?? '') }}').openPopup();
+@endif
 </script>
 @endpush
 @endif

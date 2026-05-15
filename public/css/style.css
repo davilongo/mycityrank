@@ -2297,23 +2297,34 @@ select.form-input { cursor: pointer; }
   border-radius: 16px;
   overflow: hidden;
 }
-.pd-map-header {
-  padding: 14px 16px 10px;
-  font-weight: 700;
+.pd-map-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s;
+}
+.pd-map-toggle:hover { background: rgba(255,255,255,0.04); }
+.pd-map-toggle-label {
+  font-weight: 600;
   font-size: 14px;
   color: var(--text);
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.pd-place-label {
-  padding: 0 16px 10px;
-  font-size: 13px;
+.pd-map-chevron {
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  flex-shrink: 0;
+  transition: transform .2s;
 }
+.pd-map-chevron--open { transform: rotate(180deg); }
 .pd-map-inner {
   height: 200px;
   width: 100%;
