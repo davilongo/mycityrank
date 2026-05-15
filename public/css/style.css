@@ -1969,6 +1969,7 @@ select.form-input { cursor: pointer; }
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px 60px;
+  overflow-x: hidden;
 }
 .pd-back-bar {
   display: flex;
@@ -2414,9 +2415,19 @@ select.form-input { cursor: pointer; }
   .post-detail-side { border-left: none; border-top: 1px solid var(--border); max-height: none; }
   .post-detail-wrap { min-height: 0; }
   /* pd-main y pd-sidebar se "disuelven" — sus hijos son flex items directos de pd-wrap */
-  .pd-wrap        { display: flex; flex-direction: column; gap: 12px; }
+  .pd-wrap        { display: flex; flex-direction: column; gap: 12px; overflow-x: hidden; }
   .pd-main,
   .pd-sidebar     { display: contents; }
+  /* Forzar ancho completo en todas las tarjetas */
+  .pd-gallery,
+  .pd-user-card,
+  .pd-content,
+  .pd-info-card,
+  .pd-actions-bar,
+  .pd-comments,
+  .pd-map-card    { width: 100%; max-width: 100%; box-sizing: border-box; }
+  /* El mapa no puede desbordar */
+  .pd-map-inner   { max-width: 100%; overflow: hidden; }
   /* Orden móvil: fotos → info usuario → titulo/desc → características → acciones → comentarios → mapa */
   .pd-gallery     { order: 1; }
   .pd-user-card   { order: 2; }
