@@ -42,6 +42,21 @@ class CiudadController extends Controller
         $isFollowing  = auth()->check() ? auth()->user()->isFollowingCiudad($ciudad) : false;
         $followersCount = $ciudad->followers()->count();
 
-        return view('ciudades.show', compact('ciudad', 'posts', 'top3', 'categorias', 'isFollowing', 'followersCount'));
+        $topCategorias = $ciudad->posts()
+            ->selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->limit(6)
+            ->get();
+
+        $mapPosts = $ciudad->posts()
+            ->whereNotNull('lat')
+            ->whereNotNull('lng')
+            ->get(['id', 'title', 'slug', 'image', 'lat', 'lng']);
+
+        return view('ciudades.show', compact(
+            'ciudad', 'posts', 'top3', 'categorias',
+            'isFollowing', 'followersCount', 'topCategorias', 'mapPosts'
+        ));
     }
 }
