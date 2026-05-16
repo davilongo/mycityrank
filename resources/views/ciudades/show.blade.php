@@ -126,7 +126,7 @@
         <div class="ciudad-sidebar-card">
             <div class="ciudad-sidebar-card-hd">🗺️ Mapa de lugares</div>
             <div id="ciudad-map" class="ciudad-map"></div>
-            <a href="{{ route('posts.map') }}" target="_blank" class="ciudad-map-link">
+            <a href="{{ route('mapa') }}" target="_blank" class="ciudad-map-link">
                 Ver mapa ampliado ↗
             </a>
         </div>
