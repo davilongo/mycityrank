@@ -99,6 +99,23 @@
                     💬 {{ $post->comments->count() }} Comentarios
                 </span>
 
+                <button type="button" class="pd-action-btn"
+                        x-data="{ copied: false }"
+                        @click="
+                            const url = '{{ route('posts.show', $post) }}';
+                            if (navigator.share) {
+                                navigator.share({ title: '{{ addslashes($post->title) }}', url });
+                            } else {
+                                navigator.clipboard.writeText(url).then(() => {
+                                    copied = true;
+                                    setTimeout(() => copied = false, 2000);
+                                });
+                            }
+                        ">
+                    <span x-show="!copied">🔗 Compartir</span>
+                    <span x-show="copied" x-cloak style="color:#22c55e;">✓ ¡Copiado!</span>
+                </button>
+
                 <div class="pd-action-sep"></div>
 
                 @auth
