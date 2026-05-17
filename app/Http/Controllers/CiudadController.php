@@ -38,7 +38,11 @@ class CiudadController extends Controller
                 ->orderByDesc('likes_count')->limit(3)->get()
             : collect();
 
-        $categorias   = Post::CATEGORIES;
+        $categorias = $ciudad->posts()
+            ->distinct()
+            ->pluck('category')
+            ->sortBy(fn($c) => array_search($c, Post::CATEGORIES))
+            ->values();
         $isFollowing  = auth()->check() ? auth()->user()->isFollowingCiudad($ciudad) : false;
         $followersCount = $ciudad->followers()->count();
 
