@@ -18,7 +18,7 @@
     <meta name="twitter:title" content="@yield('title', 'XploreFree')">
     <meta name="twitter:description" content="@yield('meta_description', 'La comunidad para descubrir, conectar y compartir lugares increíbles.')">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=20">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=21">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
 <body>
@@ -253,5 +253,80 @@
         }
     }
     </script>
+
+    {{-- ===== BOTTOM NAV (móvil) ===== --}}
+    <nav class="bottom-nav">
+        <a href="{{ route('posts.index') }}"
+           class="bn-item {{ request()->routeIs('posts.index') ? 'bn-item--on' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span>Explorar</span>
+        </a>
+
+        <a href="{{ route('mapa') }}"
+           class="bn-item {{ request()->routeIs('mapa') ? 'bn-item--on' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                <line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+            <span>Mapa</span>
+        </a>
+
+        @auth
+            <a href="{{ route('posts.create') }}" class="bn-item bn-item--create">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="bn-item bn-item--create">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </a>
+        @endauth
+
+        @auth
+            <a href="{{ route('feed') }}"
+               class="bn-item {{ request()->routeIs('feed') ? 'bn-item--on' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                <span>Feed</span>
+            </a>
+
+            <a href="{{ route('users.show', Auth::user()) }}"
+               class="bn-item {{ request()->routeIs('users.show') && request()->route('user')?->id === Auth::id() ? 'bn-item--on' : '' }}">
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset(Auth::user()->avatar) }}" class="bn-avatar" alt="">
+                @else
+                    <span class="bn-avatar-letter">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
+                @endif
+                <span>Perfil</span>
+            </a>
+        @else
+            <a href="{{ route('users.discover') }}"
+               class="bn-item {{ request()->routeIs('users.discover') ? 'bn-item--on' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Descubrir</span>
+            </a>
+
+            <a href="{{ route('login') }}"
+               class="bn-item {{ request()->routeIs('login') ? 'bn-item--on' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Entrar</span>
+            </a>
+        @endauth
+    </nav>
+
 </body>
 </html>
