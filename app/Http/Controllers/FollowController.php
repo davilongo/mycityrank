@@ -28,14 +28,46 @@ class FollowController extends Controller
 
     public function feed()
     {
-        $followingIds = Auth::user()->following()->pluck('users.id');
+        $me = Auth::user();
+        $followingUserIds  = $me->following()->pluck('users.id');
+        $followingCityIds  = $me->followingCiudades()->pluck('ciudades.id');
 
-        $posts = \App\Models\Post::whereIn('user_id', $followingIds)
-            ->with(['user', 'ciudad'])
-            ->withCount(['likes', 'comments'])
-            ->latest()
-            ->paginate(12);
+        $hasSources = $followingUserIds->isNotEmpty() || $followingCityIds->isNotEmpty();
 
-        return view('posts.feed', compact('posts'));
+        if ($hasSources) {
+            $posts = \App\Models\Post::with(['user', 'ciudad'])
+                ->withCount(['likes', 'comments'])
+                ->where(function ($q) use ($followingUserIds, $followingCityIds) {
+                    $q->whereIn('user_id', $followingUserIds)
+                      ->orWhereIn('ciudad_id', $followingCityIds);
+                })
+                ->latest()
+                ->paginate(12);
+
+            $posts->getCollection()->transform(function ($post) use ($followingUserIds) {
+                $post->feed_source = $followingUserIds->contains($post->user_id) ? 'user' : 'ciudad';
+                return $post;
+            });
+        } else {
+            $posts = \App\Models\Post::with(['user', 'ciudad'])
+                ->withCount(['likes', 'comments'])
+                ->latest()
+                ->paginate(12);
+
+            $posts->getCollection()->transform(function ($post) {
+                $post->feed_source = 'discover';
+                return $post;
+            });
+        }
+
+        $trending = \App\Models\Post::withCount('likes')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->orderByDesc('likes_count')
+            ->limit(5)
+            ->get();
+
+        $followedCities = $me->followingCiudades()->withCount('posts')->get();
+
+        return view('posts.feed', compact('posts', 'trending', 'hasSources', 'followedCities'));
     }
 }

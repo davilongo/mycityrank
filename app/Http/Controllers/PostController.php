@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Ciudad;
+use App\Models\Hashtag;
 use App\Notifications\NewComment;
 use App\Notifications\NewPostInCity;
 use Illuminate\Http\Request;
@@ -32,7 +33,20 @@ class PostController extends Controller
             ->limit(6)
             ->get();
 
-        return view('posts.index', compact('posts', 'ciudadesPopulares'));
+        $trending = Post::withCount('likes')
+            ->with(['ciudad'])
+            ->where('created_at', '>=', now()->subDays(7))
+            ->orderByDesc('likes_count')
+            ->limit(8)
+            ->get();
+
+        $popularHashtags = Hashtag::withCount('posts')
+            ->having('posts_count', '>', 0)
+            ->orderByDesc('posts_count')
+            ->limit(16)
+            ->get();
+
+        return view('posts.index', compact('posts', 'ciudadesPopulares', 'trending', 'popularHashtags'));
     }
 
     public function create()

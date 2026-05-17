@@ -1,53 +1,116 @@
 @extends('layouts.app')
 
+@section('title', 'Tu feed — XploreFree')
+
 @section('contenido')
 
-<div class="section" style="padding-top:32px;">
-    <div class="section-header">
-        <h2 class="section-title">🏠 Tu feed</h2>
+<div class="feed-page">
+
+    <div class="feed-layout">
+
+        {{-- ===== MAIN FEED ===== --}}
+        <div class="feed-main">
+
+            <div class="feed-hd">
+                <h1 class="feed-title">
+                    @if($hasSources)
+                        🏠 Tu feed
+                    @else
+                        🔍 Descubre lugares
+                    @endif
+                </h1>
+                @if(!$hasSources)
+                    <p class="feed-subtitle">Sigue a usuarios o ciudades para ver su contenido aquí.</p>
+                @endif
+            </div>
+
+            @if($posts->isEmpty())
+                <div class="empty-state">
+                    <p>Las personas y ciudades que sigues aún no han publicado nada.</p>
+                    <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;margin-top:10px;">Explorar posts</a>
+                </div>
+            @else
+                <ul class="feed-grid">
+                    @foreach($posts as $post)
+                        <li>
+                            <a href="{{ route('posts.show', $post) }}" class="city-post-card">
+                                <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                                <div class="city-post-card-overlay">
+                                    <div class="city-post-card-cat">
+                                        @if($post->feed_source === 'user')
+                                            👤 {{ $post->user->name ?? 'Anónimo' }}
+                                        @elseif($post->feed_source === 'ciudad')
+                                            📍 {{ $post->ciudad->nombre ?? '' }}
+                                        @else
+                                            🔥 Tendencia
+                                        @endif
+                                    </div>
+                                    <div class="city-post-card-title">{{ $post->title }}</div>
+                                    <div class="city-post-card-stats">
+                                        <span>❤️ {{ $post->likes_count }}</span>
+                                        <span>💬 {{ $post->comments_count }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+                <div class="pagination" style="margin-top:20px;">{{ $posts->links() }}</div>
+            @endif
+
+        </div>
+
+        {{-- ===== SIDEBAR ===== --}}
+        <div class="feed-sidebar">
+
+            {{-- Followed cities --}}
+            @if($followedCities->isNotEmpty())
+            <div class="feed-sidebar-card">
+                <div class="feed-sidebar-hd">📍 Ciudades que sigues</div>
+                <div class="feed-cities-list">
+                    @foreach($followedCities as $city)
+                        <a href="{{ route('ciudades.show', $city) }}" class="feed-city-item">
+                            <span class="feed-city-name">{{ $city->nombre }}</span>
+                            <span class="feed-city-count">{{ $city->posts_count }} posts</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- Trending this week --}}
+            @if($trending->isNotEmpty())
+            <div class="feed-sidebar-card">
+                <div class="feed-sidebar-hd">🔥 Tendencias esta semana</div>
+                <div class="feed-trending-list">
+                    @foreach($trending as $post)
+                        <a href="{{ route('posts.show', $post) }}" class="feed-trending-item">
+                            <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                            <div class="feed-trending-body">
+                                <div class="feed-trending-title">{{ Str::limit($post->title, 45) }}</div>
+                                <div class="feed-trending-stats">❤️ {{ $post->likes_count }}</div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- Invite to explore --}}
+            @if(!$hasSources)
+            <div class="feed-sidebar-card feed-sidebar-card--cta">
+                <div class="feed-sidebar-hd">✨ Personaliza tu feed</div>
+                <p class="feed-cta-text">Sigue usuarios o ciudades y verás solo lo que te interesa.</p>
+                <a href="{{ route('posts.index') }}" class="btn-nav" style="display:block;text-align:center;margin-top:10px;">
+                    Explorar y seguir
+                </a>
+            </div>
+            @endif
+
+        </div>
+
     </div>
 
-    @if($posts->isEmpty())
-        <div class="empty-state">
-            <p>Aún no sigues a nadie o las personas que sigues no han publicado nada.</p>
-            <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;">Explorar posts</a>
-        </div>
-    @else
-        <ul class="posts-grid">
-            @foreach($posts as $post)
-                <li class="post-card">
-                    <a href="{{ route('posts.show', $post) }}">
-                        <div class="card-image-wrap">
-                            <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
-                            @if($post->ciudad)
-                                <span class="card-city-badge">📍 {{ $post->ciudad->nombre }}</span>
-                            @endif
-                        </div>
-                    </a>
-                    <div class="card-body">
-                        <a href="{{ route('posts.show', $post) }}">
-                            <h3 class="card-title">{{ $post->title }}</h3>
-                        </a>
-                        <div class="card-row">
-                            <span class="card-category">{{ $post->category }}</span>
-                            <div class="card-stats">
-                                <span>❤️ {{ $post->likes_count }}</span>
-                                <span>💬 {{ $post->comments_count }}</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{{ route('users.show', $post->user) }}" class="card-author">
-                                <span class="card-author-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</span>
-                                {{ $post->user->name ?? 'Anónimo' }}
-                            </a>
-                            <span class="card-date">{{ $post->created_at->diffForHumans() }}</span>
-                        </div>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-        <div class="pagination">{{ $posts->links() }}</div>
-    @endif
 </div>
 
 @endsection

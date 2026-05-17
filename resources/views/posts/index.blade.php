@@ -40,6 +40,32 @@
     </div>
 </section>
 
+{{-- ===== TRENDING ESTA SEMANA ===== --}}
+@if($trending->isNotEmpty())
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">🔥 Tendencia esta semana</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Los lugares más populares de los últimos 7 días</p>
+        </div>
+    </div>
+    <div class="trending-scroll">
+        @foreach($trending as $post)
+            <a href="{{ route('posts.show', $post) }}" class="trending-card">
+                <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                <div class="trending-card-overlay">
+                    @if($post->ciudad)
+                        <div class="trending-card-city">📍 {{ $post->ciudad->nombre }}</div>
+                    @endif
+                    <div class="trending-card-title">{{ Str::limit($post->title, 40) }}</div>
+                    <div class="trending-card-stats">❤️ {{ $post->likes_count }}</div>
+                </div>
+            </a>
+        @endforeach
+    </div>
+</section>
+@endif
+
 {{-- ===== RANKING DE CIUDADES ===== --}}
 @if($ciudadesPopulares->isNotEmpty())
 <section class="section" id="destinos">
@@ -64,6 +90,26 @@
                     <span class="city-card-name">{{ $ciudad->nombre }}</span>
                     <span class="city-card-count">{{ $ciudad->posts_count }} {{ $ciudad->posts_count === 1 ? 'lugar' : 'lugares' }}</span>
                 </div>
+            </a>
+        @endforeach
+    </div>
+</section>
+@endif
+
+{{-- ===== HASHTAGS POPULARES ===== --}}
+@if($popularHashtags->isNotEmpty())
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">🏷️ Hashtags populares</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Explora por temática</p>
+        </div>
+    </div>
+    <div class="hashtag-strip">
+        @foreach($popularHashtags as $tag)
+            <a href="{{ route('hashtag.show', $tag->name) }}" class="hashtag-strip-pill">
+                #{{ $tag->name }}
+                <span class="hashtag-strip-count">{{ $tag->posts_count }}</span>
             </a>
         @endforeach
     </div>
