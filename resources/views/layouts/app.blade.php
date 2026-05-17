@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XploreFree</title>
+    <title>@yield('title', 'XploreFree — Descubre lugares increíbles')</title>
+    <meta name="description" content="@yield('meta_description', 'La comunidad para descubrir, conectar y compartir lugares increíbles.')">
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="XploreFree">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('title', 'XploreFree — Descubre lugares increíbles')">
+    <meta property="og:description" content="@yield('meta_description', 'La comunidad para descubrir, conectar y compartir lugares increíbles.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
+    <meta property="og:locale" content="es_ES">
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'XploreFree')">
+    <meta name="twitter:description" content="@yield('meta_description', 'La comunidad para descubrir, conectar y compartir lugares increíbles.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=20">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>

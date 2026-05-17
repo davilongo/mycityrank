@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('title', $ciudad->nombre . ' — XploreFree')
+@section('meta_description', 'Descubre los mejores lugares en ' . $ciudad->nombre . '. ' . $posts->total() . ' publicaciones de la comunidad.')
+@if($top3->first()?->image ?? $posts->first()?->image)
+@section('og_image', url(($top3->first() ?? $posts->first())->image))
+@endif
+
 @section('contenido')
 
 <style>

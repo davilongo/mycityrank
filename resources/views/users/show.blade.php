@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('title', $user->name . ' — XploreFree')
+@section('meta_description', $user->bio ?? ($user->name . ' comparte lugares increíbles en XploreFree.'))
+@if($posts->first()?->image)
+@section('og_image', url($posts->first()->image))
+@endif
+
 @section('contenido')
 
 <div class="profile-page">
@@ -49,36 +55,26 @@
             <p>{{ $user->name }} aún no ha publicado nada.</p>
         </div>
     @else
-        <ul class="posts-grid profile-grid">
+        <ul class="city-posts-grid">
             @foreach($posts as $post)
-                <li class="post-card">
-                    <a href="{{ route('posts.show', $post) }}">
-                        <div class="card-image-wrap">
-                            <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                <li>
+                    <a href="{{ route('posts.show', $post) }}" class="city-post-card">
+                        <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
+                        <div class="city-post-card-overlay">
                             @if($post->ciudad)
-                                <span class="card-city-badge">📍 {{ $post->ciudad->nombre }}</span>
+                                <div class="city-post-card-cat">📍 {{ $post->ciudad->nombre }}</div>
                             @endif
-                        </div>
-                    </a>
-                    <div class="card-body">
-                        <a href="{{ route('posts.show', $post) }}">
-                            <h3 class="card-title">{{ $post->title }}</h3>
-                        </a>
-                        <div class="card-row">
-                            <span class="card-category">{{ $post->category }}</span>
-                            <div class="card-stats">
+                            <div class="city-post-card-title">{{ $post->title }}</div>
+                            <div class="city-post-card-stats">
                                 <span>❤️ {{ $post->likes_count }}</span>
                                 <span>💬 {{ $post->comments_count }}</span>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <span class="card-date">{{ $post->created_at->diffForHumans() }}</span>
-                        </div>
-                    </div>
+                    </a>
                 </li>
             @endforeach
         </ul>
-        <div class="pagination">{{ $posts->links() }}</div>
+        <div class="pagination" style="margin-top:20px;">{{ $posts->links() }}</div>
     @endif
 
 </div>
