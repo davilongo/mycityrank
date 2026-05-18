@@ -7,11 +7,6 @@
 
 @section('contenido')
 
-<style>
-  body { background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important; }
-  .main-container { background: transparent !important; }
-</style>
-
 @php $allImgs = $post->allImages(); @endphp
 
 <div class="pd-page">

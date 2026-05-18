@@ -2,11 +2,6 @@
 
 @section('contenido')
 
-<style>
-  body { background: linear-gradient(135deg, #0f172a 0%, #0c1a3a 50%, #0f172a 100%) !important; }
-  .main-container { background: transparent !important; }
-</style>
-
 @php
 $catDesc = [
     '🍽️ Restaurante'           => 'Comida y cocina local',
