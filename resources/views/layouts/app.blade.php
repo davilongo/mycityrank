@@ -18,7 +18,7 @@
     <meta name="twitter:title" content="@yield('title', 'XploreFree')">
     <meta name="twitter:description" content="@yield('meta_description', 'La comunidad para descubrir, conectar y compartir lugares increíbles.')">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=24">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=25">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
 <body>

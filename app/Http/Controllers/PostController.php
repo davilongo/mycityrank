@@ -198,9 +198,12 @@ class PostController extends Controller
         $posts = Post::whereNotNull('lat')
             ->whereNotNull('lng')
             ->with(['user', 'ciudad'])
-            ->get(['id', 'title', 'slug', 'image', 'lat', 'lng', 'user_id', 'ciudad_id']);
+            ->get(['id', 'title', 'slug', 'image', 'place_name', 'category', 'lat', 'lng', 'user_id', 'ciudad_id']);
 
-        return view('posts.mapa', compact('posts'));
+        $total    = $posts->count();
+        $ciudades = $posts->pluck('ciudad.nombre')->filter()->unique()->count();
+
+        return view('posts.mapa', compact('posts', 'total', 'ciudades'));
     }
 
     private function compressAndStore(\Illuminate\Http\UploadedFile $file): string
