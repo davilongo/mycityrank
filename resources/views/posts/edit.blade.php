@@ -221,8 +221,8 @@ $catDesc = [
     const center = existingLat ? [existingLat, existingLng] : [20, 0];
     const zoom   = existingLat ? 10 : 2;
     const map = L.map('picker-map').setView(center, zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');

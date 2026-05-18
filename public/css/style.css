@@ -300,7 +300,7 @@ body {
 
 .post-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 40px -8px rgba(2,132,199,0.18), 0 8px 16px rgba(0,0,0,0.06);
 }
 
 .card-image-wrap {
@@ -1310,7 +1310,7 @@ select.form-input { cursor: pointer; }
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.city-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.city-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -8px rgba(2,132,199,0.18), 0 8px 16px rgba(0,0,0,0.06); }
 
 .city-card img {
   width: 100%;
@@ -1672,7 +1672,7 @@ select.form-input { cursor: pointer; }
 
 .city-top-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  box-shadow: 0 20px 40px -8px rgba(2,132,199,0.18), 0 8px 16px rgba(0,0,0,0.08);
 }
 
 .city-top-rank-1 { border: 2px solid #f59e0b; }
@@ -1749,7 +1749,7 @@ select.form-input { cursor: pointer; }
   display: block;
 }
 
-.city-post-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.city-post-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -8px rgba(2,132,199,0.18), 0 8px 16px rgba(0,0,0,0.06); }
 
 .city-post-card img {
   width: 100%;

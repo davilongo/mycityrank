@@ -275,8 +275,8 @@
 <script>
 window.postMap = L.map('post-map', { zoomControl: false, scrollWheelZoom: false })
     .setView([{{ $post->lat }}, {{ $post->lng }}], 14);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
 }).addTo(window.postMap);
 const marker = L.marker([{{ $post->lat }}, {{ $post->lng }}]).addTo(window.postMap);
 @if($post->place_name)
