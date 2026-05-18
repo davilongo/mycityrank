@@ -153,6 +153,10 @@
                         </div>
                         <div class="pd-comment-body">
                             <span class="pd-comment-name">{{ $comment->user->name ?? 'Anónimo' }}</span>
+                            @if($comment->user)
+                                @php $cr = $comment->user->rankBadge(); @endphp
+                                <span class="rank-badge rank-badge--{{ $cr['tier'] }} rank-badge--xs">{{ $cr['emoji'] }}</span>
+                            @endif
                             <span class="pd-comment-time">{{ $comment->created_at->diffForHumans() }}</span>
                             <div class="pd-comment-text">{{ $comment->body }}</div>
                         </div>
@@ -179,6 +183,8 @@
                     </a>
                     <div class="pd-user-info">
                         <a href="{{ route('users.show', $post->user) }}" class="pd-user-name">{{ $post->user->name ?? 'Anónimo' }}</a>
+                        @php $rank = $post->user->rankBadge(); @endphp
+                        <span class="rank-badge rank-badge--{{ $rank['tier'] }} rank-badge--sm">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
                         <div class="pd-user-since">Miembro desde {{ $post->user->created_at->translatedFormat('F Y') }}</div>
                     </div>
                     @auth

@@ -77,4 +77,15 @@ class User extends Authenticatable
     {
         return $this->followingCiudades()->where('ciudad_id', $ciudad->id)->exists();
     }
+
+    public function rankBadge(): array
+    {
+        $count = $this->posts_count ?? $this->loadCount('posts')->posts_count;
+        return match(true) {
+            $count >= 20 => ['emoji' => '🏆', 'label' => 'Leyenda Explorer',   'tier' => 'legend'],
+            $count >= 10 => ['emoji' => '⭐', 'label' => 'Explorador Experto', 'tier' => 'expert'],
+            $count >= 3  => ['emoji' => '🧭', 'label' => 'Explorador',         'tier' => 'mid'],
+            default      => ['emoji' => '🌱', 'label' => 'Novato',             'tier' => 'novice'],
+        };
+    }
 }

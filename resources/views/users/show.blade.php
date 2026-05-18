@@ -25,6 +25,8 @@
                 @if($user->isAdmin())
                     <span class="badge-admin">ADMIN</span>
                 @endif
+                @php $rank = $user->rankBadge(); @endphp
+                <span class="rank-badge rank-badge--{{ $rank['tier'] }}">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
                 @auth
                     @if(Auth::id() === $user->id)
                         <a href="{{ route('profile.edit') }}" class="btn-ghost" style="margin-left:8px;">Editar perfil</a>
@@ -46,6 +48,13 @@
                 <span><strong>{{ $followersCount }}</strong> seguidores</span>
                 <span><strong>{{ $followingCount }}</strong> siguiendo</span>
             </div>
+            @if($expertCities->isNotEmpty())
+                <div class="profile-expertise">
+                    @foreach($expertCities as $item)
+                        <span class="expertise-badge">📍 Experto en {{ $item['ciudad']->nombre }} <span class="expertise-count">{{ $item['total'] }} posts</span></span>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 

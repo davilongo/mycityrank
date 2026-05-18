@@ -3523,3 +3523,54 @@ select.form-input { cursor: pointer; }
   transition: background .15s;
 }
 .map-back-btn:hover { background: var(--accent-dark); color: #fff; }
+
+/* ===== RANK BADGES ===== */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rank-badge--novice  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.rank-badge--mid     { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.rank-badge--expert  { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.rank-badge--legend  { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+/* Tamaño pequeño — tarjeta de autor en post */
+.rank-badge--sm {
+  font-size: 11px;
+  padding: 3px 8px;
+}
+/* Mini — solo emoji en comentarios */
+.rank-badge--xs {
+  font-size: 11px;
+  padding: 2px 5px;
+}
+/* Ciudades de expertise en perfil */
+.profile-expertise {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.expertise-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.expertise-count {
+  font-weight: 400;
+  color: #3b82f6;
+  font-size: 11px;
+}

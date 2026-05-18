@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Ciudad;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +18,27 @@ class UserController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(12);
 
+        $user->loadCount('posts');
+
+        $cityCounts = $user->posts()
+            ->whereNotNull('ciudad_id')
+            ->select('ciudad_id', DB::raw('count(*) as total'))
+            ->groupBy('ciudad_id')
+            ->having('total', '>=', 3)
+            ->orderByDesc('total')
+            ->limit(3)
+            ->get()
+            ->keyBy('ciudad_id');
+
+        $expertCities = Ciudad::whereIn('id', $cityCounts->keys())
+            ->get()
+            ->map(fn($c) => ['ciudad' => $c, 'total' => $cityCounts[$c->id]->total]);
+
         $followersCount = $user->followers()->count();
         $followingCount = $user->following()->count();
         $isFollowing    = Auth::check() ? $this->authUser()->isFollowing($user) : false;
 
-        return view('users.show', compact('user', 'posts', 'followersCount', 'followingCount', 'isFollowing'));
+        return view('users.show', compact('user', 'posts', 'followersCount', 'followingCount', 'isFollowing', 'expertCities'));
     }
 
     public function search(Request $request)
