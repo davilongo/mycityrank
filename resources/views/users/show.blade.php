@@ -61,8 +61,8 @@
                     <a href="{{ route('posts.show', $post) }}" class="city-post-card">
                         <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
                         <div class="city-post-card-overlay">
-                            @if($post->ciudad)
-                                <div class="city-post-card-cat">📍 {{ $post->ciudad->nombre }}</div>
+                            @if($post->place_name || $post->ciudad)
+                                <div class="city-post-card-cat">📍 {{ $post->place_name ?? $post->ciudad->nombre }}</div>
                             @endif
                             <div class="city-post-card-title">{{ $post->title }}</div>
                             <div class="city-post-card-stats">

@@ -40,7 +40,7 @@
                                         @if($post->feed_source === 'user')
                                             👤 {{ $post->user->name ?? 'Anónimo' }}
                                         @elseif($post->feed_source === 'ciudad')
-                                            📍 {{ $post->ciudad->nombre ?? '' }}
+                                            📍 {{ $post->place_name ?? $post->ciudad->nombre ?? '' }}
                                         @else
                                             🔥 Tendencia
                                         @endif

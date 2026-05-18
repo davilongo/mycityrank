@@ -144,8 +144,8 @@
                     <a href="{{ route('posts.show', $post) }}">
                         <div class="card-image-wrap">
                             <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
-                            @if($post->ciudad)
-                                <span class="card-city-badge">📍 {{ $post->ciudad->nombre }}</span>
+                            @if($post->place_name || $post->ciudad)
+                                <span class="card-city-badge">📍 {{ $post->place_name ?? $post->ciudad->nombre }}</span>
                             @endif
                         </div>
                     </a>

@@ -107,7 +107,7 @@
                             <a href="{{ route('posts.show', $post) }}" class="city-post-card">
                                 <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
                                 <div class="city-post-card-overlay">
-                                    <div class="city-post-card-cat">{{ $post->category }}</div>
+                                    <div class="city-post-card-cat">{{ $post->place_name ?? $post->category }}</div>
                                     <div class="city-post-card-title">{{ $post->title }}</div>
                                     <div class="city-post-card-stats">
                                         <span>❤️ {{ $post->likes_count }}</span>
