@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tu feed — XploreFree')
+@section('title', __('feed.your_feed') . ' — XploreFree')
 
 @section('contenido')
 
@@ -14,20 +14,20 @@
             <div class="feed-hd">
                 <h1 class="feed-title">
                     @if($hasSources)
-                        🏠 Tu feed
+                        {{ __('feed.your_feed') }}
                     @else
-                        🔍 Descubre lugares
+                        {{ __('feed.discover_places') }}
                     @endif
                 </h1>
                 @if(!$hasSources)
-                    <p class="feed-subtitle">Sigue a usuarios o ciudades para ver su contenido aquí.</p>
+                    <p class="feed-subtitle">{{ __('feed.follow_to_see') }}</p>
                 @endif
             </div>
 
             @if($posts->isEmpty())
                 <div class="empty-state">
-                    <p>Las personas y ciudades que sigues aún no han publicado nada.</p>
-                    <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;margin-top:10px;">Explorar posts</a>
+                    <p>{{ __('feed.no_posts') }}</p>
+                    <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;margin-top:10px;">{{ __('feed.explore_posts') }}</a>
                 </div>
             @else
                 <ul class="feed-grid">
@@ -38,11 +38,11 @@
                                 <div class="city-post-card-overlay">
                                     <div class="city-post-card-cat">
                                         @if($post->feed_source === 'user')
-                                            👤 {{ $post->user->name ?? 'Anónimo' }}
+                                            👤 {{ $post->user->name ?? __('posts.anonymous') }}
                                         @elseif($post->feed_source === 'ciudad')
                                             📍 {{ $post->place_name ?? $post->ciudad->nombre ?? '' }}
                                         @else
-                                            🔥 Tendencia
+                                            {{ __('feed.trending_badge') }}
                                         @endif
                                     </div>
                                     <div class="city-post-card-title">{{ $post->title }}</div>
@@ -63,10 +63,9 @@
         {{-- ===== SIDEBAR ===== --}}
         <div class="feed-sidebar">
 
-            {{-- Followed cities --}}
             @if($followedCities->isNotEmpty())
             <div class="feed-sidebar-card">
-                <div class="feed-sidebar-hd">📍 Ciudades que sigues</div>
+                <div class="feed-sidebar-hd">{{ __('feed.cities_you_follow') }}</div>
                 <div class="feed-cities-list">
                     @foreach($followedCities as $city)
                         <a href="{{ route('ciudades.show', $city) }}" class="feed-city-item">
@@ -78,10 +77,9 @@
             </div>
             @endif
 
-            {{-- Trending this week --}}
             @if($trending->isNotEmpty())
             <div class="feed-sidebar-card">
-                <div class="feed-sidebar-hd">🔥 Tendencias esta semana</div>
+                <div class="feed-sidebar-hd">{{ __('feed.trending_this_week') }}</div>
                 <div class="feed-trending-list">
                     @foreach($trending as $post)
                         <a href="{{ route('posts.show', $post) }}" class="feed-trending-item">
@@ -96,13 +94,12 @@
             </div>
             @endif
 
-            {{-- Invite to explore --}}
             @if(!$hasSources)
             <div class="feed-sidebar-card feed-sidebar-card--cta">
-                <div class="feed-sidebar-hd">✨ Personaliza tu feed</div>
-                <p class="feed-cta-text">Sigue usuarios o ciudades y verás solo lo que te interesa.</p>
+                <div class="feed-sidebar-hd">{{ __('feed.personalize_title') }}</div>
+                <p class="feed-cta-text">{{ __('feed.personalize_text') }}</p>
                 <a href="{{ route('posts.index') }}" class="btn-nav" style="display:block;text-align:center;margin-top:10px;">
-                    Explorar y seguir
+                    {{ __('feed.explore_and_follow') }}
                 </a>
             </div>
             @endif

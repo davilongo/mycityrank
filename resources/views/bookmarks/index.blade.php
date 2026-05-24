@@ -4,13 +4,13 @@
 
 <div class="section" style="padding-top:32px;">
     <div class="section-header">
-        <h2 class="section-title">🔖 Posts guardados</h2>
+        <h2 class="section-title">{{ __('bookmarks.title') }}</h2>
     </div>
 
     @if($posts->isEmpty())
         <div class="empty-state">
-            <p>No tienes ningún post guardado todavía.</p>
-            <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;">Explorar posts</a>
+            <p>{{ __('bookmarks.no_bookmarks') }}</p>
+            <a href="{{ route('posts.index') }}" class="btn-nav" style="display:inline-block;">{{ __('bookmarks.explore_posts') }}</a>
         </div>
     @else
         <ul class="posts-grid">
@@ -29,7 +29,7 @@
                             <h3 class="card-title">{{ $post->title }}</h3>
                         </a>
                         <div class="card-row">
-                            <span class="card-category">{{ $post->category }}</span>
+                            <span class="card-category">{{ t_cat($post->category) }}</span>
                             <div class="card-stats">
                                 <span>❤️ {{ $post->likes_count }}</span>
                                 <span>💬 {{ $post->comments_count }}</span>
@@ -38,7 +38,7 @@
                         <div class="card-footer">
                             <a href="{{ route('users.show', $post->user) }}" class="card-author">
                                 <span class="card-author-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</span>
-                                {{ $post->user->name ?? 'Anónimo' }}
+                                {{ $post->user->name ?? __('bookmarks.anonymous') }}
                             </a>
                             <span class="card-date">{{ $post->created_at->diffForHumans() }}</span>
                         </div>

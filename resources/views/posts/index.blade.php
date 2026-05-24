@@ -5,8 +5,8 @@
 {{-- ===== HERO ===== --}}
 <section class="hero">
     <div class="hero-inner">
-        <h1 class="hero-title">Descubre el mundo</h1>
-        <p class="hero-subtitle">Busca una ciudad y explora todo lo que tiene para ofrecer</p>
+        <h1 class="hero-title">{{ __('posts.discover_world') }}</h1>
+        <p class="hero-subtitle">{{ __('posts.search_subtitle') }}</p>
 
         <div x-data="citySearch()" class="search-wrap" @click.outside="open = false">
             <div class="search-box">
@@ -18,22 +18,22 @@
                     @keydown.enter.prevent="goFirst()"
                     @keydown.escape="open = false"
                     @focus="query.length >= 2 && search()"
-                    placeholder="¿A dónde vas? Ej: Algeciras, Madrid, Sevilla..."
+                    placeholder="{{ __('posts.search_placeholder') }}"
                     class="search-input"
                     autocomplete="off"
                 >
-                <button @click="goFirst()" class="search-btn">Buscar</button>
+                <button @click="goFirst()" class="search-btn">{{ __('posts.search_btn') }}</button>
             </div>
 
             <div x-show="open" x-transition.opacity class="search-dropdown">
                 <template x-for="ciudad in results" :key="ciudad.id">
                     <button @click="go(ciudad.nombre)" class="search-item">
                         <span class="search-item-name" x-text="ciudad.nombre"></span>
-                        <span class="search-item-count" x-text="ciudad.posts_count + ' publicaciones'"></span>
+                        <span class="search-item-count" x-text="ciudad.posts_count + ' {{ __('posts.place_plural') }}'"></span>
                     </button>
                 </template>
                 <p x-show="results.length === 0 && query.length >= 2" class="search-empty">
-                    No encontramos esa ciudad
+                    {{ __('posts.city_not_found') }}
                 </p>
             </div>
         </div>
@@ -45,8 +45,8 @@
 <section class="section">
     <div class="section-header">
         <div>
-            <h2 class="section-title">🔥 Tendencia esta semana</h2>
-            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Los lugares más populares de los últimos 7 días</p>
+            <h2 class="section-title">{{ __('posts.trending_title') }}</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">{{ __('posts.trending_subtitle') }}</p>
         </div>
     </div>
     <div class="trending-scroll">
@@ -71,8 +71,8 @@
 <section class="section" id="destinos">
     <div class="section-header">
         <div>
-            <h2 class="section-title">🏆 Ranking de ciudades</h2>
-            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Las ciudades con más contenido de la comunidad</p>
+            <h2 class="section-title">{{ __('posts.ranking_title') }}</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">{{ __('posts.ranking_subtitle') }}</p>
         </div>
     </div>
     <div class="cities-grid">
@@ -88,7 +88,7 @@
                 @endif
                 <div class="city-card-overlay">
                     <span class="city-card-name">{{ $ciudad->nombre }}</span>
-                    <span class="city-card-count">{{ $ciudad->posts_count }} {{ $ciudad->posts_count === 1 ? 'lugar' : 'lugares' }}</span>
+                    <span class="city-card-count">{{ $ciudad->posts_count }} {{ $ciudad->posts_count === 1 ? __('posts.place_singular') : __('posts.place_plural') }}</span>
                 </div>
             </a>
         @endforeach
@@ -101,8 +101,8 @@
 <section class="section">
     <div class="section-header">
         <div>
-            <h2 class="section-title">🏷️ Hashtags populares</h2>
-            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Explora por temática</p>
+            <h2 class="section-title">{{ __('posts.hashtags_title') }}</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">{{ __('posts.hashtags_subtitle') }}</p>
         </div>
     </div>
     <div class="hashtag-strip">
@@ -120,21 +120,21 @@
 <section class="section">
     <div class="section-header">
         <div>
-            <h2 class="section-title">🌍 Últimas publicaciones</h2>
-            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">{{ $posts->total() }} publicaciones en total</p>
+            <h2 class="section-title">{{ __('posts.latest_title') }}</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">{{ $posts->total() }} {{ __('posts.place_plural') }}</p>
         </div>
         @auth
-            <a href="{{ route('posts.create') }}" class="btn-nav">+ Nuevo post</a>
+            <a href="{{ route('posts.create') }}" class="btn-nav">{{ __('posts.new_post') }}</a>
         @endauth
     </div>
 
     @if($posts->isEmpty())
         <div class="empty-state">
-            <p>No hay publicaciones todavía.</p>
+            <p>{{ __('posts.no_posts') }}</p>
             @auth
-                <a href="{{ route('posts.create') }}" class="btn-nav" style="display:inline-block;">Crear el primero</a>
+                <a href="{{ route('posts.create') }}" class="btn-nav" style="display:inline-block;">{{ __('posts.create_first') }}</a>
             @else
-                <a href="{{ route('login') }}" class="btn-nav" style="display:inline-block;">Inicia sesión para publicar</a>
+                <a href="{{ route('login') }}" class="btn-nav" style="display:inline-block;">{{ __('posts.login_to_post') }}</a>
             @endauth
         </div>
     @else
@@ -154,7 +154,7 @@
                             <h3 class="card-title">{{ $post->title }}</h3>
                         </a>
                         <div class="card-row">
-                            <span class="card-category">{{ $post->category }}</span>
+                            <span class="card-category">{{ t_cat($post->category) }}</span>
                             <div class="card-stats">
                                 <span>❤️ {{ $post->likes_count }}</span>
                                 <span>💬 {{ $post->comments_count }}</span>
@@ -163,7 +163,7 @@
                         <div class="card-footer">
                             <a href="{{ $post->user ? route('users.show', $post->user) : '#' }}" class="card-author">
                                 <span class="card-author-avatar">{{ mb_substr($post->user->name ?? 'A', 0, 1) }}</span>
-                                {{ $post->user->name ?? 'Anónimo' }}
+                                {{ $post->user->name ?? __('posts.anonymous') }}
                             </a>
                             <span class="card-date">{{ $post->created_at->diffForHumans() }}</span>
                         </div>

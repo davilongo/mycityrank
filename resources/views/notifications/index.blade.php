@@ -2,7 +2,7 @@
 
 @section('contenido')
 <div class="notif-page">
-    <h2 class="notif-title">Notificaciones</h2>
+    <h2 class="notif-title">{{ __('notifications.title') }}</h2>
 
     @forelse($notifications as $notif)
         <div class="notif-item {{ $notif->read_at ? 'notif-read' : 'notif-unread' }}">
@@ -21,12 +21,12 @@
             @if(!$notif->read_at)
                 <form method="POST" action="{{ route('notifications.read', $notif->id) }}">
                     @csrf
-                    <button type="submit" class="notif-mark-read" title="Marcar como leída">✓</button>
+                    <button type="submit" class="notif-mark-read" title="{{ __('notifications.mark_read') }}">✓</button>
                 </form>
             @endif
         </div>
     @empty
-        <p class="notif-empty">No tienes notificaciones todavía.</p>
+        <p class="notif-empty">{{ __('notifications.no_notifs') }}</p>
     @endforelse
 
     <div class="pagination-wrap">

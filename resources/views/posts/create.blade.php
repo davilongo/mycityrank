@@ -3,19 +3,7 @@
 @section('contenido')
 
 @php
-$catDesc = [
-    '🍽️ Restaurante'           => 'Comida y cocina local',
-    '🍺 Bar & Copas'            => 'Bares y vida nocturna',
-    '☕ Café'                    => 'Cafeterías y pastelerías',
-    '🏛️ Monumento & Cultura'    => 'Historia y arquitectura',
-    '🌿 Parque & Naturaleza'    => 'Parques y al aire libre',
-    '🛍️ Tienda & Mercado'       => 'Mercados y comercios',
-    '🏖️ Playa'                  => 'Playas y costas',
-    '🎭 Ocio & Entretenimiento' => 'Cine y actividades',
-    '🎉 Fiestas & Tradiciones'  => 'Eventos y celebraciones',
-    '🏨 Alojamiento'            => 'Hoteles y hospedaje',
-    '💡 Joya Oculta'            => 'Lugares secretos',
-];
+$catDesc = trans('catdesc');
 @endphp
 
 <div style="width:100%; display:flex; justify-content:center; padding:0 16px 60px;">
@@ -24,8 +12,8 @@ $catDesc = [
     <div class="create-form-header">
         <a href="{{ route('posts.index') }}" class="create-form-back">&#8592;</a>
         <div>
-            <h1 class="create-form-title">Crear publicación</h1>
-            <p class="create-form-subtitle">Comparte tu experiencia con la comunidad</p>
+            <h1 class="create-form-title">{{ __('posts.create_title') }}</h1>
+            <p class="create-form-subtitle">{{ __('posts.create_subtitle') }}</p>
         </div>
     </div>
 
@@ -37,8 +25,8 @@ $catDesc = [
         <div class="form-section">
             <div class="form-section-hd">
                 <span class="form-section-num">1</span>
-                <span class="form-section-title">Elige una categoría</span>
-                <p class="form-section-sub">Selecciona la categoría que mejor se adapte a tu publicación.</p>
+                <span class="form-section-title">{{ __('posts.choose_category') }}</span>
+                <p class="form-section-sub">{{ __('posts.choose_category_sub') }}</p>
             </div>
             <input type="hidden" name="category" :value="sel">
             <div class="cat-cards-grid">
@@ -48,7 +36,7 @@ $catDesc = [
                             :class="{ 'cat-card--on': sel === $el.dataset.cat }"
                             @click="sel = $el.dataset.cat">
                         <span class="cat-card-icon">{{ $icon }}</span>
-                        <span class="cat-card-name">{{ $name }}</span>
+                        <span class="cat-card-name">{{ t_cat_name($cat) }}</span>
                         <span class="cat-card-desc">{{ $catDesc[$cat] ?? '' }}</span>
                     </button>
                 @endforeach
@@ -60,28 +48,28 @@ $catDesc = [
         <div class="form-section">
             <div class="form-section-hd">
                 <span class="form-section-num">2</span>
-                <span class="form-section-title">Cuéntanos los detalles</span>
-                <p class="form-section-sub">Un buen título y descripción ayudan a que otros descubran este lugar.</p>
+                <span class="form-section-title">{{ __('posts.details_title') }}</span>
+                <p class="form-section-sub">{{ __('posts.details_sub') }}</p>
             </div>
             <div class="form-section-body">
                 <div class="auth-row-2">
                     <div class="form-group">
-                        <label for="title">Título</label>
+                        <label for="title">{{ __('posts.title_label') }}</label>
                         <input type="text" name="title" id="title"
-                               value="{{ old('title') }}" placeholder="Ej: La mejor pizzería de Nápoles" required>
+                               value="{{ old('title') }}" placeholder="{{ __('posts.title_placeholder') }}" required>
                         @error('title') <span class="error">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
-                        <label for="ciudad_nombre">Ciudad</label>
+                        <label for="ciudad_nombre">{{ __('posts.city_label') }}</label>
                         <input type="text" name="ciudad_nombre" id="ciudad_nombre"
-                               value="{{ old('ciudad_nombre') }}" placeholder="París, Roma, Tokio..." required>
+                               value="{{ old('ciudad_nombre') }}" placeholder="{{ __('posts.city_placeholder') }}" required>
                         @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label for="content">Descripción</label>
+                    <label for="content">{{ __('posts.description_label') }}</label>
                     <textarea name="content" id="content"
-                              placeholder="Cuéntanos qué hace especial este lugar, cómo llegar, qué pedir... Usa #hashtags para que te encuentren."
+                              placeholder="{{ __('posts.description_placeholder') }}"
                               required>{{ old('content') }}</textarea>
                     @error('content') <span class="error">{{ $message }}</span> @enderror
                 </div>
@@ -92,8 +80,8 @@ $catDesc = [
         <div class="form-section">
             <div class="form-section-hd">
                 <span class="form-section-num">3</span>
-                <span class="form-section-title">Añade imágenes</span>
-                <p class="form-section-sub">Las imágenes hacen tu publicación más atractiva. La primera será la portada · máx. 6.</p>
+                <span class="form-section-title">{{ __('posts.photos_title') }}</span>
+                <p class="form-section-sub">{{ __('posts.photos_sub') }}</p>
             </div>
             <div class="form-section-body">
                 <div class="auth-upload" x-data="{
@@ -118,15 +106,15 @@ $catDesc = [
                     <template x-if="busy">
                         <div>
                             <div class="auth-upload-icon">⏳</div>
-                            <p class="auth-upload-text">Optimizando imágenes...</p>
-                            <p class="auth-upload-hint">Un momento, se están comprimiendo</p>
+                            <p class="auth-upload-text">{{ __('posts.optimizing') }}</p>
+                            <p class="auth-upload-hint">{{ __('posts.compressing') }}</p>
                         </div>
                     </template>
                     <template x-if="!busy && count === 0">
                         <div>
                             <div class="auth-upload-icon">📷</div>
-                            <p class="auth-upload-text">Arrastra tus imágenes aquí o haz clic para seleccionar</p>
-                            <p class="auth-upload-hint">JPG o PNG · hasta 6 fotos</p>
+                            <p class="auth-upload-text">{{ __('posts.drag_images') }}</p>
+                            <p class="auth-upload-hint">{{ __('posts.jpg_png_hint') }}</p>
                         </div>
                     </template>
                     <template x-if="!busy && count > 0">
@@ -135,14 +123,14 @@ $catDesc = [
                                 <template x-for="(src, i) in previews" :key="i">
                                     <div class="auth-thumb" :class="i === 0 ? 'auth-thumb--cover' : ''">
                                         <img :src="src" alt="">
-                                        <span x-show="i === 0" class="auth-thumb-badge">portada</span>
+                                        <span x-show="i === 0" class="auth-thumb-badge">{{ __('posts.cover_badge') }}</span>
                                     </div>
                                 </template>
                             </div>
                             <p class="auth-upload-hint" style="margin-top:10px;"
-                               x-text="count + (count === 1 ? ' foto lista para subir ✓' : ' fotos listas para subir ✓')"></p>
+                               x-text="count + (count === 1 ? ' {{ __('posts.photo_ready') }}' : ' {{ __('posts.photos_ready') }}')"></p>
                             <button type="button" class="auth-upload-change" @click="$refs.fi.click()">
-                                Cambiar selección
+                                {{ __('posts.change_selection') }}
                             </button>
                         </div>
                     </template>
@@ -156,17 +144,17 @@ $catDesc = [
         <div class="form-section">
             <div class="form-section-hd">
                 <span class="form-section-num">4</span>
-                <span class="form-section-title">Ubicación en el mapa <span class="auth-hint-label">(opcional)</span></span>
-                <p class="form-section-sub">Marca la ubicación exacta para que otros puedan encontrarla fácilmente.</p>
+                <span class="form-section-title">{{ __('posts.map_title') }} <span class="auth-hint-label">({{ __('posts.optional') }})</span></span>
+                <p class="form-section-sub">{{ __('posts.map_subtitle') }}</p>
             </div>
             <div class="form-section-body">
                 <div class="form-group" style="margin-bottom:12px;">
-                    <label for="place_name">Nombre del lugar <span class="auth-hint-label">(opcional)</span></label>
+                    <label for="place_name">{{ __('posts.place_name_label') }} <span class="auth-hint-label">({{ __('posts.optional') }})</span></label>
                     <div class="map-search-wrap" style="margin-bottom:0;">
                         <input type="text" name="place_name" id="place_name" class="map-search-input"
                                value="{{ old('place_name') }}"
-                               placeholder="Ej: Catedral de Sevilla, Bar El Copo...">
-                        <button type="button" class="map-search-btn" id="map-search-btn">Buscar</button>
+                               placeholder="{{ __('posts.place_name_placeholder') }}">
+                        <button type="button" class="map-search-btn" id="map-search-btn">{{ __('posts.map_search_btn') }}</button>
                     </div>
                     @error('place_name') <span class="error">{{ $message }}</span> @enderror
                 </div>
@@ -174,7 +162,7 @@ $catDesc = [
                 <div id="picker-map" class="map-picker"></div>
                 <input type="hidden" name="lat" id="lat">
                 <input type="hidden" name="lng" id="lng">
-                <p class="map-picker-hint" id="picker-hint">Escribe el nombre y pulsa Buscar, o haz clic en el mapa</p>
+                <p class="map-picker-hint" id="picker-hint">{{ __('posts.map_hint') }}</p>
             </div>
         </div>
 
@@ -182,8 +170,8 @@ $catDesc = [
         <div class="form-section">
             <div class="form-section-hd">
                 <span class="form-section-num">5</span>
-                <span class="form-section-title">Características del lugar <span class="auth-hint-label">(opcional)</span></span>
-                <p class="form-section-sub">Selecciona las que mejor describen este sitio.</p>
+                <span class="form-section-title">{{ __('posts.features_title') }} <span class="auth-hint-label">({{ __('posts.optional') }})</span></span>
+                <p class="form-section-sub">{{ __('posts.features_sub') }}</p>
             </div>
             <div class="form-section-body">
                 <div class="tags-picker-grid">
@@ -191,7 +179,7 @@ $catDesc = [
                         <label class="tag-chip-pick">
                             <input type="checkbox" name="tags[]" value="{{ $tag }}"
                                    {{ in_array($tag, old('tags', [])) ? 'checked' : '' }}>
-                            <span>{{ $tag }}</span>
+                            <span>{{ t_tag($tag) }}</span>
                         </label>
                     @endforeach
                 </div>
@@ -199,12 +187,12 @@ $catDesc = [
         </div>
 
         <button type="submit" class="btn-primary" style="width:100%;padding:15px;font-size:16px;margin-top:8px;">
-            Publicar
+            {{ __('posts.publish_btn') }}
         </button>
     </form>
 
     <p class="post-form-back" style="text-align:center;margin-top:20px;">
-        <a href="{{ route('posts.index') }}">← Volver al feed</a>
+        <a href="{{ route('posts.index') }}">{{ __('posts.back_to_feed') }}</a>
     </p>
 
 </div>
@@ -245,7 +233,6 @@ $catDesc = [
         placeMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // Geocoding con Nominatim
     const searchInput   = document.getElementById('place_name');
     const searchBtn     = document.getElementById('map-search-btn');
     const searchResults = document.getElementById('map-search-results');
@@ -262,13 +249,13 @@ $catDesc = [
         searchResults.style.display = 'none';
         try {
             const res = await fetch(
-                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&accept-language=es`,
-                { headers: { 'Accept-Language': 'es' } }
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&accept-language={{ app()->getLocale() }}`,
+                { headers: { 'Accept-Language': '{{ app()->getLocale() }}' } }
             );
             const data = await res.json();
-            searchBtn.textContent = 'Buscar';
+            searchBtn.textContent = '{{ __('posts.map_search_btn') }}';
             if (!data.length) {
-                searchResults.innerHTML = '<div class="map-search-empty">Sin resultados — prueba con otro nombre</div>';
+                searchResults.innerHTML = '<div class="map-search-empty">{{ __('posts.map_no_results') }}</div>';
                 searchResults.style.display = 'block';
                 return;
             }
@@ -282,7 +269,7 @@ $catDesc = [
             ).join('');
             searchResults.style.display = 'block';
         } catch {
-            searchBtn.textContent = 'Buscar';
+            searchBtn.textContent = '{{ __('posts.map_search_btn') }}';
         }
     }
 

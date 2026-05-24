@@ -22,18 +22,18 @@
             @endif
             <div class="ciudad-hero-overlay"></div>
             <div class="ciudad-hero-content">
-                <a href="{{ route('posts.index') }}" class="ciudad-hero-back">← Volver</a>
+                <a href="{{ route('posts.index') }}" class="ciudad-hero-back">{{ __('cities.back') }}</a>
                 <h1 class="ciudad-hero-title">📍 {{ $ciudad->nombre }}</h1>
                 <p class="ciudad-hero-meta">
-                    {{ $posts->total() }} {{ $posts->total() === 1 ? 'publicación' : 'publicaciones' }}
+                    {{ $posts->total() }} {{ $posts->total() === 1 ? __('cities.publication') : __('cities.publications') }}
                     &nbsp;·&nbsp;
-                    {{ $followersCount }} {{ $followersCount === 1 ? 'seguidor' : 'seguidores' }}
+                    {{ $followersCount }} {{ $followersCount === 1 ? __('cities.follower') : __('cities.followers') }}
                 </p>
                 @auth
                     <form method="POST" action="{{ route('ciudades.follow', $ciudad) }}" style="margin-top:14px;">
                         @csrf
                         <button type="submit" class="btn-follow-city {{ $isFollowing ? 'following' : '' }}">
-                            {{ $isFollowing ? '✓ Siguiendo' : '+ Seguir ciudad' }}
+                            {{ $isFollowing ? __('cities.following_btn') : __('cities.follow_btn') }}
                         </button>
                     </form>
                 @endauth
@@ -44,8 +44,8 @@
         @if($top3->isNotEmpty() && !request('categoria'))
         <section class="ciudad-section">
             <div class="ciudad-section-hd">
-                <h2 class="ciudad-section-title">⭐ Destacados de la comunidad</h2>
-                <span class="ciudad-section-sub">Los lugares más votados</span>
+                <h2 class="ciudad-section-title">{{ __('cities.featured_title') }}</h2>
+                <span class="ciudad-section-sub">{{ __('cities.featured_sub') }}</span>
             </div>
             <div class="city-top-grid">
                 @foreach($top3 as $i => $post)
@@ -55,7 +55,7 @@
                             <span class="city-top-rank">{{ ['🥇','🥈','🥉'][$i] }}</span>
                         </div>
                         <div class="city-top-body">
-                            <span class="city-top-cat">{{ $post->category }}</span>
+                            <span class="city-top-cat">{{ t_cat($post->category) }}</span>
                             <h3 class="city-top-name">{{ $post->title }}</h3>
                             <div class="city-top-stats">
                                 <span>❤️ {{ $post->likes_count }}</span>
@@ -71,10 +71,10 @@
         {{-- CATEGORÍAS --}}
         <div class="cat-filter-wrap">
             <a href="{{ route('ciudades.show', $ciudad) }}"
-               class="cat-pill {{ !request('categoria') ? 'active' : '' }}">Todas</a>
+               class="cat-pill {{ !request('categoria') ? 'active' : '' }}">{{ __('cities.all_categories') }}</a>
             @foreach($categorias as $cat)
                 <a href="{{ route('ciudades.show', $ciudad) }}?categoria={{ urlencode($cat) }}"
-                   class="cat-pill {{ request('categoria') === $cat ? 'active' : '' }}">{{ $cat }}</a>
+                   class="cat-pill {{ request('categoria') === $cat ? 'active' : '' }}">{{ t_cat($cat) }}</a>
             @endforeach
         </div>
 
@@ -82,16 +82,16 @@
         <section class="ciudad-section">
             <div class="ciudad-section-hd">
                 <h2 class="ciudad-section-title">
-                    {{ request('categoria') ? request('categoria') : 'Más lugares en ' . $ciudad->nombre }}
+                    {{ request('categoria') ? t_cat(request('categoria')) : __('cities.more_places') . ' ' . $ciudad->nombre }}
                 </h2>
             </div>
 
             @if($posts->isEmpty())
                 <div class="empty-state">
-                    <p>No hay publicaciones en esta categoría todavía.</p>
+                    <p>{{ __('cities.no_posts') }}</p>
                     @auth
                         <a href="{{ route('posts.create') }}" class="btn-nav" style="display:inline-block;margin-top:10px;">
-                            Publicar sobre {{ $ciudad->nombre }}
+                            {{ __('cities.publish_about') }} {{ $ciudad->nombre }}
                         </a>
                     @endauth
                 </div>
@@ -102,7 +102,7 @@
                             <a href="{{ route('posts.show', $post) }}" class="city-post-card">
                                 <img src="{{ asset($post->image) }}" alt="{{ $post->title }}" loading="lazy">
                                 <div class="city-post-card-overlay">
-                                    <div class="city-post-card-cat">{{ $post->place_name ?? $post->category }}</div>
+                                    <div class="city-post-card-cat">{{ $post->place_name ?? t_cat($post->category) }}</div>
                                     <div class="city-post-card-title">{{ $post->title }}</div>
                                     <div class="city-post-card-stats">
                                         <span>❤️ {{ $post->likes_count }}</span>
@@ -122,26 +122,24 @@
     {{-- ===== SIDEBAR ===== --}}
     <div class="ciudad-sidebar">
 
-        {{-- Mapa con posts de la ciudad --}}
         @if($mapPosts->isNotEmpty())
         <div class="ciudad-sidebar-card">
-            <div class="ciudad-sidebar-card-hd">🗺️ Mapa de lugares</div>
+            <div class="ciudad-sidebar-card-hd">{{ __('cities.map_title') }}</div>
             <div id="ciudad-map" class="ciudad-map"></div>
             <a href="{{ route('mapa') }}" target="_blank" class="ciudad-map-link">
-                Ver mapa ampliado ↗
+                {{ __('cities.see_full_map') }}
             </a>
         </div>
         @endif
 
-        {{-- Top categorías --}}
         @if($topCategorias->isNotEmpty())
         <div class="ciudad-sidebar-card">
-            <div class="ciudad-sidebar-card-hd">📊 Top categorías</div>
+            <div class="ciudad-sidebar-card-hd">{{ __('cities.top_categories') }}</div>
             <div class="ciudad-top-cats">
                 @foreach($topCategorias as $cat)
                     <a href="{{ route('ciudades.show', $ciudad) }}?categoria={{ urlencode($cat->category) }}"
                        class="ciudad-top-cat-item {{ request('categoria') === $cat->category ? 'ciudad-top-cat-item--on' : '' }}">
-                        <span class="ciudad-top-cat-name">{{ $cat->category }}</span>
+                        <span class="ciudad-top-cat-name">{{ t_cat($cat->category) }}</span>
                         <span class="ciudad-top-cat-count">{{ $cat->total }}</span>
                     </a>
                 @endforeach

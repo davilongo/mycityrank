@@ -14,6 +14,14 @@ Route::get('/', function () {
     return redirect()->route('posts.index');
 });
 
+// Cambio de idioma
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['es', 'en'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 // Posts (create debe ir antes que {post})
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/create', [PostController::class, 'create'])->middleware('auth')->name('posts.create');

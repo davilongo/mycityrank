@@ -13,7 +13,7 @@
 
     {{-- Nav bar --}}
     <div class="pd-back-bar">
-        <a href="{{ route('posts.index') }}" class="btn-back">← Volver</a>
+        <a href="{{ route('posts.index') }}" class="btn-back">{{ __('posts.back') }}</a>
     </div>
 
     <div class="pd-wrap">
@@ -59,7 +59,7 @@
                         </a>
                     @endif
                     <a href="{{ route('posts.index', ['categoria' => $post->category]) }}" class="pd-badge">
-                        {{ $post->category }}
+                        {{ t_cat($post->category) }}
                     </a>
                     <span class="pd-badge pd-badge-neutral">🕐 {{ $post->created_at->diffForHumans() }}</span>
                 </div>
@@ -83,15 +83,15 @@
                     @auth
                         @php $liked = $post->likes->contains('user_id', Auth::id()); @endphp
                         <button type="submit" class="pd-action-btn {{ $liked ? 'pd-action-btn--like-on' : '' }}">
-                            {{ $liked ? '❤️' : '🤍' }} {{ $post->likes->count() }} Me gusta
+                            {{ $liked ? '❤️' : '🤍' }} {{ $post->likes->count() }} {{ __('posts.likes') }}
                         </button>
                     @else
-                        <a href="{{ route('login') }}" class="pd-action-btn">🤍 {{ $post->likes->count() }} Me gusta</a>
+                        <a href="{{ route('login') }}" class="pd-action-btn">🤍 {{ $post->likes->count() }} {{ __('posts.likes') }}</a>
                     @endauth
                 </form>
 
                 <span class="pd-action-btn" style="cursor:default;">
-                    💬 {{ $post->comments->count() }} Comentarios
+                    💬 {{ $post->comments->count() }} {{ __('posts.comments_label') }}
                 </span>
 
                 <button type="button" class="pd-action-btn"
@@ -107,8 +107,8 @@
                                 });
                             }
                         ">
-                    <span x-show="!copied">🔗 Compartir</span>
-                    <span x-show="copied" x-cloak style="color:#22c55e;">✓ ¡Copiado!</span>
+                    <span x-show="!copied">{{ __('posts.share') }}</span>
+                    <span x-show="copied" x-cloak style="color:#22c55e;">{{ __('posts.copied') }}</span>
                 </button>
 
                 <div class="pd-action-sep"></div>
@@ -117,8 +117,8 @@
                     <form style="display:contents;" action="{{ route('posts.bookmark', $post) }}" method="POST">
                         @csrf
                         @php $saved = Auth::user()->bookmarks()->where('post_id', $post->id)->exists(); @endphp
-                        <button type="submit" class="pd-action-btn" title="{{ $saved ? 'Quitar de guardados' : 'Guardar' }}">
-                            {{ $saved ? '🔖' : '🏷️' }} {{ $saved ? 'Guardado' : 'Guardar' }}
+                        <button type="submit" class="pd-action-btn" title="{{ $saved ? __('posts.unsave') : __('posts.save') }}">
+                            {{ $saved ? '🔖' : '🏷️' }} {{ $saved ? __('posts.saved') : __('posts.save') }}
                         </button>
                     </form>
                 @endauth
@@ -126,19 +126,19 @@
 
             {{-- Comments --}}
             <div class="pd-comments">
-                <div class="pd-comments-title">Comentarios ({{ $post->comments->count() }})</div>
+                <div class="pd-comments-title">{{ __('posts.comments_label') }} ({{ $post->comments->count() }})</div>
 
                 @auth
                     <form class="pd-comment-form" method="POST" action="{{ route('posts.comment', $post) }}">
                         @csrf
                         <div class="pd-comment-avatar">{{ mb_substr(Auth::user()->name, 0, 1) }}</div>
-                        <textarea name="body" placeholder="Escribe un comentario..." required rows="1"
+                        <textarea name="body" placeholder="{{ __('posts.write_comment') }}" required rows="1"
                                   oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-                        <button type="submit">Publicar</button>
+                        <button type="submit">{{ __('posts.publish_comment') }}</button>
                     </form>
                 @else
                     <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-                        <a href="{{ route('login') }}" style="color:var(--accent);font-weight:600;">Inicia sesión</a> para comentar.
+                        <a href="{{ route('login') }}" style="color:var(--accent);font-weight:600;">{{ __('auth.sign_in') }}</a> {{ __('posts.login_to_comment') }}
                     </div>
                 @endauth
 
@@ -152,7 +152,7 @@
                             @endif
                         </div>
                         <div class="pd-comment-body">
-                            <span class="pd-comment-name">{{ $comment->user->name ?? 'Anónimo' }}</span>
+                            <span class="pd-comment-name">{{ $comment->user->name ?? __('posts.anonymous') }}</span>
                             @if($comment->user)
                                 @php $cr = $comment->user->rankBadge(); @endphp
                                 <span class="rank-badge rank-badge--{{ $cr['tier'] }} rank-badge--xs">{{ $cr['emoji'] }}</span>
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                 @empty
-                    <p class="pd-no-comments">Aún no hay comentarios. ¡Sé el primero!</p>
+                    <p class="pd-no-comments">{{ __('posts.no_comments') }}</p>
                 @endforelse
             </div>
 
@@ -182,29 +182,29 @@
                         @endif
                     </a>
                     <div class="pd-user-info">
-                        <a href="{{ route('users.show', $post->user) }}" class="pd-user-name">{{ $post->user->name ?? 'Anónimo' }}</a>
+                        <a href="{{ route('users.show', $post->user) }}" class="pd-user-name">{{ $post->user->name ?? __('posts.anonymous') }}</a>
                         @php $rank = $post->user->rankBadge(); @endphp
                         <span class="rank-badge rank-badge--{{ $rank['tier'] }} rank-badge--sm">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
-                        <div class="pd-user-since">Miembro desde {{ $post->user->created_at->translatedFormat('F Y') }}</div>
+                        <div class="pd-user-since">{{ __('posts.member_since') }} {{ $post->user->created_at->translatedFormat('F Y') }}</div>
                     </div>
                     @auth
                         @if(Auth::id() !== $post->user_id)
-                            <a href="{{ route('users.show', $post->user) }}" class="pd-follow-btn">Seguir</a>
+                            <a href="{{ route('users.show', $post->user) }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="pd-follow-btn">Seguir</a>
+                        <a href="{{ route('login') }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
                     @endauth
                 </div>
 
                 @auth
                     @if(Auth::id() === $post->user_id || Auth::user()->isAdmin())
                         <div class="pd-owner-actions">
-                            <a href="{{ route('posts.edit', $post) }}" class="pd-edit-btn">✏️ Editar</a>
+                            <a href="{{ route('posts.edit', $post) }}" class="pd-edit-btn">{{ __('posts.edit_post') }}</a>
                             <form method="POST" action="{{ route('posts.destroy', $post) }}" style="display:contents;"
-                                  onsubmit="return confirm('¿Seguro que quieres borrar este post?')">
+                                  onsubmit="return confirm('{{ __('posts.confirm_delete') }}')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="pd-delete-btn">🗑️ Borrar</button>
+                                <button type="submit" class="pd-delete-btn">{{ __('posts.delete_post') }}</button>
                             </form>
                         </div>
                     @endif
@@ -225,7 +225,7 @@
                             @elseif($post->ciudad)
                                 {{ $post->ciudad->nombre }}
                             @else
-                                Ubicación
+                                {{ __('posts.location') }}
                             @endif
                         </span>
                         <svg class="pd-map-chevron" :class="{ 'pd-map-chevron--open': open }"
@@ -239,11 +239,11 @@
                         <div class="pd-map-btns">
                             <a href="https://www.openstreetmap.org/?mlat={{ $post->lat }}&mlon={{ $post->lng }}&zoom=16"
                                target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--outline">
-                                ⛶ Ver mapa
+                                {{ __('posts.see_map') }}
                             </a>
                             <a href="https://www.google.com/maps/dir/?api=1&destination={{ $post->lat }},{{ $post->lng }}"
                                target="_blank" rel="noopener" class="pd-map-btn pd-map-btn--primary">
-                                🧭 Cómo llegar
+                                {{ __('posts.directions') }}
                             </a>
                         </div>
                     </div>
@@ -253,7 +253,7 @@
             {{-- Info card (tags) --}}
             @if($post->tags && count($post->tags) > 0)
                 <div class="pd-info-card">
-                    <div class="pd-info-header">ℹ️ Información del lugar</div>
+                    <div class="pd-info-header">{{ __('posts.place_info') }}</div>
                     @if($post->ciudad)
                         <div class="pd-info-city">📍 {{ $post->ciudad->nombre }}{{ $post->place_name ? ', ' . $post->place_name : '' }}</div>
                     @endif
@@ -262,7 +262,7 @@
                             @php [$icon, $label] = array_pad(explode(' ', $tag, 2), 2, ''); @endphp
                             <div class="pd-info-tag">
                                 <div class="pd-info-tag-icon">{{ $icon }}</div>
-                                <span>{{ $label }}</span>
+                                <span>{{ t_tag($tag) }}</span>
                             </div>
                         @endforeach
                     </div>

@@ -23,18 +23,18 @@
             <div class="profile-name-row">
                 <h1 class="profile-name">{{ $user->name }}</h1>
                 @if($user->isAdmin())
-                    <span class="badge-admin">ADMIN</span>
+                    <span class="badge-admin">{{ __('users.admin_badge') }}</span>
                 @endif
                 @php $rank = $user->rankBadge(); @endphp
                 <span class="rank-badge rank-badge--{{ $rank['tier'] }}">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
                 @auth
                     @if(Auth::id() === $user->id)
-                        <a href="{{ route('profile.edit') }}" class="btn-ghost" style="margin-left:8px;">Editar perfil</a>
+                        <a href="{{ route('profile.edit') }}" class="btn-ghost" style="margin-left:8px;">{{ __('users.edit_profile') }}</a>
                     @else
                         <form method="POST" action="{{ route('users.follow', $user) }}" style="margin-left:8px;">
                             @csrf
                             <button type="submit" class="{{ $isFollowing ? 'btn-ghost' : 'btn-nav' }}">
-                                {{ $isFollowing ? 'Siguiendo' : 'Seguir' }}
+                                {{ $isFollowing ? __('users.following_btn') : __('users.follow_btn') }}
                             </button>
                         </form>
                     @endif
@@ -44,14 +44,14 @@
                 <p class="profile-bio">{{ $user->bio }}</p>
             @endif
             <div class="profile-stats">
-                <span><strong>{{ $posts->total() }}</strong> publicaciones</span>
-                <span><strong>{{ $followersCount }}</strong> seguidores</span>
-                <span><strong>{{ $followingCount }}</strong> siguiendo</span>
+                <span><strong>{{ $posts->total() }}</strong> {{ __('users.posts_count') }}</span>
+                <span><strong>{{ $followersCount }}</strong> {{ __('users.followers') }}</span>
+                <span><strong>{{ $followingCount }}</strong> {{ __('users.following') }}</span>
             </div>
             @if($expertCities->isNotEmpty())
                 <div class="profile-expertise">
                     @foreach($expertCities as $item)
-                        <span class="expertise-badge">📍 Experto en {{ $item['ciudad']->nombre }} <span class="expertise-count">{{ $item['total'] }} posts</span></span>
+                        <span class="expertise-badge">📍 {{ __('users.expert_in') }} {{ $item['ciudad']->nombre }} <span class="expertise-count">{{ $item['total'] }} posts</span></span>
                     @endforeach
                 </div>
             @endif
@@ -61,7 +61,7 @@
     {{-- ===== GRID DE POSTS ===== --}}
     @if($posts->isEmpty())
         <div class="empty-state">
-            <p>{{ $user->name }} aún no ha publicado nada.</p>
+            <p>{{ $user->name }} {{ __('users.no_posts') }}</p>
         </div>
     @else
         <ul class="city-posts-grid">

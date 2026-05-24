@@ -5,12 +5,12 @@
 
     <div class="discover-header">
         <div>
-            <h2 class="discover-title">👥 Descubrir gente</h2>
+            <h2 class="discover-title">{{ __('users.discover_title') }}</h2>
             <p class="discover-subtitle">
                 @if($myCityIds->isNotEmpty())
-                    Personas que publican en las mismas ciudades que tú
+                    {{ __('users.from_same_cities') }}
                 @else
-                    Los usuarios más activos de la comunidad
+                    {{ __('users.most_active') }}
                 @endif
             </p>
         </div>
@@ -18,8 +18,8 @@
 
     @if($suggested->isEmpty())
         <div class="empty-state">
-            <p>No hay sugerencias por ahora. ¡Sube tu primer post para que podamos sugerirte gente!</p>
-            <a href="{{ route('posts.create') }}" class="btn-nav" style="display:inline-block;margin-top:12px;">+ Crear post</a>
+            <p>{{ __('users.no_suggestions') }}</p>
+            <a href="{{ route('posts.create') }}" class="btn-nav" style="display:inline-block;margin-top:12px;">{{ __('users.create_post_btn') }}</a>
         </div>
     @else
         <div class="discover-grid">
@@ -36,17 +36,17 @@
                         <a href="{{ route('users.show', $person) }}" class="discover-name">{{ $person->name }}</a>
                         <div class="discover-stats">
                             <span>📸 {{ $person->posts_count }} posts</span>
-                            <span>👥 {{ $person->followers_count }} seguidores</span>
+                            <span>👥 {{ $person->followers_count }} {{ __('users.seguidores_label') }}</span>
                         </div>
                         @if(isset($person->shared_posts_count) && $person->shared_posts_count > 0)
                             <span class="discover-shared">
-                                {{ $person->shared_posts_count }} {{ $person->shared_posts_count === 1 ? 'post' : 'posts' }} en ciudades comunes
+                                {{ $person->shared_posts_count }} {{ $person->shared_posts_count === 1 ? __('users.posts_in_common_single') : __('users.posts_in_common_plural') }}
                             </span>
                         @endif
                     </div>
                     <form method="POST" action="{{ route('users.follow', $person) }}">
                         @csrf
-                        <button type="submit" class="btn-follow-discover">Seguir</button>
+                        <button type="submit" class="btn-follow-discover">{{ __('users.follow_btn') }}</button>
                     </form>
                 </div>
             @endforeach
