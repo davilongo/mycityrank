@@ -63,6 +63,7 @@ body {
   width: auto;
   display: block;
   object-fit: contain;
+  mix-blend-mode: multiply;
 }
 .nav-logo-text {
   font-size: 18px;
