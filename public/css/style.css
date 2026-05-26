@@ -37,8 +37,8 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 64px;
-  background: var(--dark);
-  border-bottom: 1px solid var(--dark-light);
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
   z-index: 200;
 }
 
@@ -68,7 +68,7 @@ body {
 .nav-logo-text {
   font-size: 18px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--dark);
   letter-spacing: -0.3px;
   white-space: nowrap;
 }
@@ -82,7 +82,7 @@ body {
 }
 
 .nav-link {
-  color: #94a3b8;
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
@@ -92,8 +92,8 @@ body {
 }
 
 .nav-link:hover, .nav-link.active {
-  background: var(--dark-mid);
-  color: #ffffff;
+  background: var(--accent-light);
+  color: var(--accent-dark);
 }
 
 .nav-actions {

@@ -19,7 +19,7 @@
     <meta name="twitter:description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=30">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=31">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
 <body>
