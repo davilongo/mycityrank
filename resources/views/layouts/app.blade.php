@@ -27,7 +27,8 @@
     <nav class="navbar" x-data="{ mobileOpen: false }">
         <div class="nav-inner">
             <a href="{{ route('posts.index') }}" class="nav-logo">
-                <img src="{{ asset('images/logo.png') }}" alt="MyCityRank">
+                <img src="{{ asset('images/logo-icon.png') }}" alt="" class="nav-logo-icon">
+                <span class="nav-logo-text">MyCityRank</span>
             </a>
 
             {{-- Menú desktop --}}

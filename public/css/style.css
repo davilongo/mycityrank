@@ -52,9 +52,24 @@ body {
   padding: 0 24px;
 }
 
-.nav-logo img {
-  height: 40px;
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.nav-logo-icon {
+  height: 34px;
+  width: auto;
   display: block;
+  object-fit: contain;
+}
+.nav-logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
 }
 
 .nav-menu {
