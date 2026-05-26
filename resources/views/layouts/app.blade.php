@@ -6,7 +6,7 @@
     <title>@yield('title', 'XploreFree — ' . __('posts.discover_world'))</title>
     <meta name="description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <!-- Open Graph -->
-    <meta property="og:site_name" content="XploreFree">
+    <meta property="og:site_name" content="MyCityRank">
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:title" content="@yield('title', 'XploreFree — ' . __('posts.discover_world'))">
     <meta property="og:description" content="@yield('meta_description', __('posts.search_subtitle'))">
@@ -18,6 +18,7 @@
     <meta name="twitter:title" content="@yield('title', 'XploreFree')">
     <meta name="twitter:description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=29">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
@@ -26,7 +27,7 @@
     <nav class="navbar" x-data="{ mobileOpen: false }">
         <div class="nav-inner">
             <a href="{{ route('posts.index') }}" class="nav-logo">
-                <img src="{{ asset('images/logo.png') }}" alt="XploreFree">
+                <img src="{{ asset('images/logo.png') }}" alt="MyCityRank">
             </a>
 
             {{-- Menú desktop --}}
