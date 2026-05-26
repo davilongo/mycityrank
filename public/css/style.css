@@ -53,10 +53,8 @@ body {
 }
 
 .nav-logo img {
-  height: 36px;
+  height: 40px;
   display: block;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
 }
 
 .nav-menu {
