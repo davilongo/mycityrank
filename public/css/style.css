@@ -121,6 +121,18 @@ body {
   letter-spacing: 0.5px;
 }
 
+.badge-agencia {
+  background: #0ea5e9;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: 5px;
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+}
+
 .btn-nav {
   background: var(--accent);
   color: white;
@@ -3626,4 +3638,18 @@ select.form-input { cursor: pointer; }
   border-color: var(--accent);
   color: var(--accent);
   background: #eff6ff;
+}
+
+/* ViataLing selector: subir por encima del bottom nav en movil */
+@media (max-width: 640px) {
+  .lingua-selector {
+    bottom: 72px !important;
+  }
+}
+
+/* Subir selector ViataLing por encima del bottom nav en movil */
+@media (max-width: 640px) {
+  #lingua-selector {
+    bottom: 72px !important;
+  }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ciudad;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Viaje;
 use Illuminate\Http\Request;
 
 class CiudadController extends Controller
@@ -58,9 +59,11 @@ class CiudadController extends Controller
             ->whereNotNull('lng')
             ->get(['id', 'title', 'slug', 'image', 'lat', 'lng']);
 
+        $viajes = $ciudad->viajes()->activos()->orderBy('fecha_salida')->limit(3)->get();
+
         return view('ciudades.show', compact(
             'ciudad', 'posts', 'top3', 'categorias',
-            'isFollowing', 'followersCount', 'topCategorias', 'mapPosts'
+            'isFollowing', 'followersCount', 'topCategorias', 'mapPosts', 'viajes'
         ));
     }
 }

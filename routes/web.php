@@ -9,6 +9,8 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CiudadFollowController;
+use App\Http\Controllers\ViajeController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -34,6 +36,12 @@ Route::get('/ciudades/{ciudad}', [CiudadController::class, 'show'])->name('ciuda
 // Perfiles de usuario (buscar y descubrir deben ir antes que {user})
 Route::get('/users/buscar', [UserController::class, 'search'])->name('users.search');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+// Viajes organizados (create antes que {viaje} para evitar colisión)
+Route::get('/viajes', [ViajeController::class, 'index'])->name('viajes.index');
+Route::get('/viajes/create', [ViajeController::class, 'create'])->middleware('auth')->name('viajes.create');
+Route::get('/viajes/{viaje}', [ViajeController::class, 'show'])->name('viajes.show');
+Route::get('/viajes/{viaje}/edit', [ViajeController::class, 'edit'])->middleware('auth')->name('viajes.edit');
 
 // Hashtags
 Route::get('/hashtag/{name}', [PostController::class, 'hashtag'])->name('hashtag.show');
@@ -66,9 +74,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/feed', [FollowController::class, 'feed'])->name('feed');
     Route::get('/descubrir', [UserController::class, 'discover'])->name('users.discover');
 
+    // Viajes (solo agencia o admin)
+    Route::post('/viajes', [ViajeController::class, 'store'])->name('viajes.store');
+    Route::put('/viajes/{viaje}', [ViajeController::class, 'update'])->name('viajes.update');
+    Route::delete('/viajes/{viaje}', [ViajeController::class, 'destroy'])->name('viajes.destroy');
+
     // Notificaciones
     Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notificaciones/{id}/leida', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+    // Admin: gestión de agencias (crear antes que {user} para evitar colisión)
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('usuarios.index');
+        Route::get('/usuarios/nueva-agencia', [AdminController::class, 'crearAgencia'])->name('usuarios.create-agencia');
+        Route::post('/usuarios/nueva-agencia', [AdminController::class, 'storeAgencia'])->name('usuarios.store-agencia');
+        Route::post('/usuarios/{user}/agencia', [AdminController::class, 'toggleAgencia'])->name('usuarios.toggle-agencia');
+    });
 });
 
 require __DIR__.'/auth.php';

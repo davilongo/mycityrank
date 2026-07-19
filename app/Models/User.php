@@ -15,6 +15,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
+        'is_agencia',
         'avatar',
         'bio',
     ];
@@ -30,12 +31,23 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
+            'is_agencia'        => 'boolean',
         ];
     }
 
     public function isAdmin(): bool
     {
         return $this->is_admin;
+    }
+
+    public function isAgencia(): bool
+    {
+        return $this->is_agencia;
+    }
+
+    public function viajes()
+    {
+        return $this->hasMany(Viaje::class);
     }
 
     public function posts()

@@ -147,6 +147,33 @@
         </div>
         @endif
 
+        @if($viajes->isNotEmpty())
+        <div class="ciudad-sidebar-card">
+            <div class="ciudad-sidebar-card-hd">✈️ Viajes organizados</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+                @foreach($viajes as $viaje)
+                    <a href="{{ route('viajes.show', $viaje) }}"
+                       style="display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:var(--text);">
+                        @if($viaje->imagen)
+                            <img src="{{ asset('storage/' . $viaje->imagen) }}"
+                                 style="width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;" alt="">
+                        @else
+                            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6366f1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✈️</div>
+                        @endif
+                        <div>
+                            <div style="font-size:13px;font-weight:600;line-height:1.3;margin-bottom:3px;">{{ $viaje->titulo }}</div>
+                            <div style="font-size:12px;color:var(--text-muted);">{{ $viaje->fecha_salida->format('d M Y') }} · {{ number_format($viaje->precio, 0, ',', '.') }} €</div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+            <a href="{{ route('viajes.index') }}"
+               style="display:block;text-align:center;margin-top:14px;font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;">
+                Ver todos los viajes →
+            </a>
+        </div>
+        @endif
+
     </div>{{-- /ciudad-sidebar --}}
 
 </div>{{-- /ciudad-layout --}}

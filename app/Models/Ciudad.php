@@ -24,4 +24,9 @@ class Ciudad extends Model
     {
         return $this->belongsToMany(User::class, 'ciudad_follows')->withTimestamps();
     }
+
+    public function viajes()
+    {
+        return $this->hasMany(Viaje::class);
+    }
 }

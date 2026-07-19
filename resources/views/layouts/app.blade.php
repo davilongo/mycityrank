@@ -19,7 +19,7 @@
     <meta name="twitter:description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=31">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=32">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 </head>
 <body>
@@ -41,47 +41,40 @@
                    class="nav-link {{ request()->routeIs('mapa') ? 'active' : '' }}">
                     {{ __('nav.map') }}
                 </a>
-            </div>
 
-            {{-- Buscador desktop --}}
-            <div x-data="userSearch()" class="nav-user-search" @click.outside="open = false">
-                <div class="nav-search-box">
-                    <span class="nav-search-icon">🔍</span>
-                    <input
-                        type="text"
-                        x-model="query"
-                        @input.debounce.250ms="search()"
-                        @keydown.escape="open = false"
-                        @focus="query.length >= 2 && search()"
-                        placeholder="{{ __('nav.search_people') }}"
-                        class="nav-search-input"
-                        autocomplete="off"
-                    >
+                {{-- Buscador desktop --}}
+                <div x-data="userSearch()" class="nav-user-search" @click.outside="open = false">
+                    <div class="nav-search-box">
+                        <span class="nav-search-icon">🔍</span>
+                        <input
+                            type="text"
+                            x-model="query"
+                            @input.debounce.250ms="search()"
+                            @keydown.escape="open = false"
+                            @focus="query.length >= 2 && search()"
+                            placeholder="{{ __('nav.search_people') }}"
+                            class="nav-search-input"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <div x-show="open" x-transition.opacity class="nav-search-dropdown">
+                        <template x-for="u in results" :key="u.id">
+                            <a :href="u.url" class="nav-search-item">
+                                <span class="nav-search-avatar" x-text="u.initial"></span>
+                                <span class="nav-search-name" x-text="u.name"></span>
+                                <span class="nav-search-count" x-text="u.posts_count + ' posts'"></span>
+                            </a>
+                        </template>
+                        <p x-show="results.length === 0 && query.length >= 2" class="nav-search-empty">
+                            {{ __('nav.no_results') }}
+                        </p>
+                    </div>
                 </div>
-                <div x-show="open" x-transition.opacity class="nav-search-dropdown">
-                    <template x-for="u in results" :key="u.id">
-                        <a :href="u.url" class="nav-search-item">
-                            <span class="nav-search-avatar" x-text="u.initial"></span>
-                            <span class="nav-search-name" x-text="u.name"></span>
-                            <span class="nav-search-count" x-text="u.posts_count + ' posts'"></span>
-                        </a>
-                    </template>
-                    <p x-show="results.length === 0 && query.length >= 2" class="nav-search-empty">
-                        {{ __('nav.no_results') }}
-                    </p>
-                </div>
-            </div>
 
-            {{-- Selector de idioma desktop --}}
-            <div class="nav-lang">
-                <a href="{{ route('lang.switch', 'es') }}"
-                   class="nav-lang-btn {{ app()->getLocale() === 'es' ? 'nav-lang-btn--on' : '' }}">
-                    🇪🇸
-                </a>
-                <a href="{{ route('lang.switch', 'en') }}"
-                   class="nav-lang-btn {{ app()->getLocale() === 'en' ? 'nav-lang-btn--on' : '' }}">
-                    🇬🇧
-                </a>
+                @guest
+                    <a href="{{ route('login') }}" class="btn-ghost">{{ __('nav.login') }}</a>
+                    <a href="{{ route('register') }}" class="btn-nav">{{ __('nav.register') }}</a>
+                @endguest
             </div>
 
             {{-- Acciones desktop --}}
@@ -90,6 +83,9 @@
                     <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">{{ __('nav.feed') }}</a>
                     <a href="{{ route('users.discover') }}" class="nav-link {{ request()->routeIs('users.discover') ? 'active' : '' }}">{{ __('nav.discover') }}</a>
                     <a href="{{ route('bookmarks.index') }}" class="nav-link {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">{{ __('nav.bookmarks') }}</a>
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.usuarios.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">🏢 Agencias</a>
+                    @endif
                     <a href="{{ route('notifications.index') }}" class="nav-link nav-bell {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                         🔔
                         @php $unread = Auth::user()->unreadNotifications()->count(); @endphp
@@ -113,9 +109,6 @@
                         @csrf
                         <button type="submit" class="btn-ghost">{{ __('nav.logout') }}</button>
                     </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn-ghost">{{ __('nav.login') }}</a>
-                    <a href="{{ route('register') }}" class="btn-nav">{{ __('nav.register') }}</a>
                 @endauth
             </div>
 
@@ -192,6 +185,11 @@
                 <a href="{{ route('posts.create') }}" class="nav-mobile-link" style="color:var(--accent);font-weight:600;">
                     {{ __('nav.new_post_mobile') }}
                 </a>
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('admin.usuarios.index') }}" class="nav-mobile-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                        🏢 Agencias
+                    </a>
+                @endif
 
                 <div class="nav-mobile-divider"></div>
 
@@ -218,18 +216,6 @@
                 <a href="{{ route('register') }}" class="nav-mobile-link" style="color:var(--accent);font-weight:600;">{{ __('nav.register') }}</a>
             @endauth
 
-            {{-- Selector de idioma móvil --}}
-            <div class="nav-mobile-divider"></div>
-            <div class="nav-lang-mobile">
-                <a href="{{ route('lang.switch', 'es') }}"
-                   class="nav-lang-btn {{ app()->getLocale() === 'es' ? 'nav-lang-btn--on' : '' }}">
-                    🇪🇸 Español
-                </a>
-                <a href="{{ route('lang.switch', 'en') }}"
-                   class="nav-lang-btn {{ app()->getLocale() === 'en' ? 'nav-lang-btn--on' : '' }}">
-                    🇬🇧 English
-                </a>
-            </div>
         </div>
     </nav>
 
