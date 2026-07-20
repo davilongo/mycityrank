@@ -21,15 +21,12 @@ class ViajeController extends Controller
 
     public function create()
     {
-        $this->authorizeAgencia();
         $ciudades = Ciudad::orderBy('nombre')->get();
         return view('viajes.create', compact('ciudades'));
     }
 
     public function store(Request $request)
     {
-        $this->authorizeAgencia();
-
         $data = $request->validate([
             'ciudad_id'    => 'required|exists:ciudades,id',
             'titulo'       => 'required|string|max:255',
@@ -61,16 +58,14 @@ class ViajeController extends Controller
 
     public function edit(Viaje $viaje)
     {
-        $this->authorizeAgencia();
-        abort_if($viaje->user_id !== auth()->id() && !auth()->user()->isAdmin(), 403);
+        $this->authorize('update', $viaje);
         $ciudades = Ciudad::orderBy('nombre')->get();
         return view('viajes.edit', compact('viaje', 'ciudades'));
     }
 
     public function update(Request $request, Viaje $viaje)
     {
-        $this->authorizeAgencia();
-        abort_if($viaje->user_id !== auth()->id() && !auth()->user()->isAdmin(), 403);
+        $this->authorize('update', $viaje);
 
         $data = $request->validate([
             'ciudad_id'    => 'required|exists:ciudades,id',
@@ -98,14 +93,8 @@ class ViajeController extends Controller
 
     public function destroy(Viaje $viaje)
     {
-        $this->authorizeAgencia();
-        abort_if($viaje->user_id !== auth()->id() && !auth()->user()->isAdmin(), 403);
+        $this->authorize('delete', $viaje);
         $viaje->delete();
         return redirect()->route('viajes.index')->with('success', 'Viaje eliminado.');
-    }
-
-    private function authorizeAgencia(): void
-    {
-        abort_if(!auth()->user()->isAgencia() && !auth()->user()->isAdmin(), 403);
     }
 }

@@ -14,8 +14,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
-        'is_agencia',
         'avatar',
         'bio',
     ];
@@ -37,12 +35,12 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->is_admin;
+        return (bool) $this->is_admin;
     }
 
     public function isAgencia(): bool
     {
-        return $this->is_agencia;
+        return (bool) $this->is_agencia;
     }
 
     public function viajes()

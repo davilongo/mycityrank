@@ -11,8 +11,6 @@ class AdminController extends Controller
 {
     public function usuarios(Request $request)
     {
-        $this->authorizeAdmin();
-
         $q = trim($request->get('q', ''));
 
         $usuarios = User::when($q, fn ($query) => $query
@@ -27,9 +25,7 @@ class AdminController extends Controller
 
     public function toggleAgencia(User $user)
     {
-        $this->authorizeAdmin();
-
-        $user->update(['is_agencia' => !$user->is_agencia]);
+        $user->forceFill(['is_agencia' => !$user->is_agencia])->save();
 
         return back()->with('success', $user->is_agencia
             ? "{$user->name} ahora es una agencia y puede publicar viajes."
@@ -38,15 +34,11 @@ class AdminController extends Controller
 
     public function crearAgencia()
     {
-        $this->authorizeAdmin();
-
         return view('admin.usuarios.create');
     }
 
     public function storeAgencia(Request $request)
     {
-        $this->authorizeAdmin();
-
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -54,17 +46,12 @@ class AdminController extends Controller
         ]);
 
         $user = User::create([
-            'name'       => $data['name'],
-            'email'      => $data['email'],
-            'password'   => Hash::make($data['password']),
-            'is_agencia' => true,
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => Hash::make($data['password']),
         ]);
+        $user->forceFill(['is_agencia' => true])->save();
 
         return redirect()->route('admin.usuarios.index')->with('success', "Agencia \"{$user->name}\" creada correctamente.");
-    }
-
-    private function authorizeAdmin(): void
-    {
-        abort_if(!auth()->user()->isAdmin(), 403);
     }
 }
