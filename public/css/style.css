@@ -43,7 +43,7 @@ body {
 }
 
 .nav-inner {
-  max-width: 1280px;
+  max-width: 1600px;
   margin: 0 auto;
   height: 100%;
   display: flex;
@@ -268,7 +268,7 @@ body {
   border-radius: 10px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1550px) {
   .nav-hamburger { display: flex; }
   .nav-menu { display: none !important; }
   .nav-user-search { display: none !important; }
