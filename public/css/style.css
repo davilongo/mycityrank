@@ -50,6 +50,13 @@ body {
   align-items: center;
   gap: 0;
   padding: 0 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-logo {
@@ -57,6 +64,7 @@ body {
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 .nav-logo-icon {
   height: 34px;
@@ -101,6 +109,7 @@ body {
   align-items: center;
   gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .nav-user {
