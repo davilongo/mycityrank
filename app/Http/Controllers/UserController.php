@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -115,6 +116,9 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete(Str::after($user->avatar, '/storage/'));
+            }
             $validated['avatar'] = Storage::url($request->file('avatar')->store('public/avatars'));
         } else {
             unset($validated['avatar']);

@@ -55,8 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
-    Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])->name('posts.like');
-    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])->middleware('throttle:30,1')->name('posts.like');
+    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->middleware('throttle:30,1')->name('posts.comment');
 
     // Perfil (editar)
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
@@ -64,13 +64,13 @@ Route::middleware('auth')->group(function () {
 
     // Bookmarks
     Route::get('/guardados', [BookmarkController::class, 'index'])->name('bookmarks.index');
-    Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle'])->name('posts.bookmark');
+    Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'toggle'])->middleware('throttle:30,1')->name('posts.bookmark');
 
     // Seguir ciudades
-    Route::post('/ciudades/{ciudad}/follow', [CiudadFollowController::class, 'toggle'])->name('ciudades.follow');
+    Route::post('/ciudades/{ciudad}/follow', [CiudadFollowController::class, 'toggle'])->middleware('throttle:30,1')->name('ciudades.follow');
 
     // Seguidores
-    Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->name('users.follow');
+    Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])->middleware('throttle:30,1')->name('users.follow');
     Route::get('/feed', [FollowController::class, 'feed'])->name('feed');
     Route::get('/descubrir', [UserController::class, 'discover'])->name('users.discover');
 

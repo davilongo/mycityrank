@@ -81,6 +81,9 @@ class ViajeController extends Controller
         ]);
 
         if ($request->hasFile('imagen')) {
+            if ($viaje->imagen) {
+                Storage::disk('public')->delete($viaje->imagen);
+            }
             $data['imagen'] = $request->file('imagen')->store('viajes', 'public');
         }
 
@@ -94,6 +97,9 @@ class ViajeController extends Controller
     public function destroy(Viaje $viaje)
     {
         $this->authorize('delete', $viaje);
+        if ($viaje->imagen) {
+            Storage::disk('public')->delete($viaje->imagen);
+        }
         $viaje->delete();
         return redirect()->route('viajes.index')->with('success', 'Viaje eliminado.');
     }

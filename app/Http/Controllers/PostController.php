@@ -9,6 +9,7 @@ use App\Notifications\NewComment;
 use App\Notifications\NewPostInCity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -149,9 +150,13 @@ class PostController extends Controller
         $post->category   = $validated['category'];
 
         if ($request->hasFile('images')) {
+            $oldImages = array_filter(array_merge([$post->image], $post->images ?? []));
+
             $urls = collect($request->file('images'))->map(fn ($f) => $this->compressAndStore($f))->values()->all();
             $post->image  = $urls[0];
             $post->images = count($urls) > 1 ? array_slice($urls, 1) : null;
+
+            collect($oldImages)->each(fn ($url) => $this->deleteImageFile($url));
         }
 
         $post->ciudad_id = $this->resolveCiudad($validated['ciudad_nombre'])->id;
@@ -166,6 +171,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         abort_unless($this->canModify($post), 403);
+        collect(array_merge([$post->image], $post->images ?? []))
+            ->filter()
+            ->each(fn ($url) => $this->deleteImageFile($url));
         $post->delete();
         return redirect()->route('posts.index');
     }
@@ -239,6 +247,15 @@ class PostController extends Controller
         imagedestroy($dest);
 
         return '/storage/images/' . $filename;
+    }
+
+    private function deleteImageFile(?string $url): void
+    {
+        if (!$url) {
+            return;
+        }
+
+        Storage::disk('public')->delete(Str::after($url, '/storage/'));
     }
 
     private function canModify(Post $post): bool
