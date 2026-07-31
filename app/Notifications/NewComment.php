@@ -4,10 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class NewComment extends Notification
+class NewComment extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     public function __construct(public User $commenter, public Post $post) {}
 
     public function via($notifiable): array
