@@ -12,10 +12,24 @@ class ViajeAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function viajeData(array $overrides = []): array
+    private function viajeModelData(array $overrides = []): array
     {
         return array_merge([
             'ciudad_id' => Ciudad::create(['nombre' => 'Ciudad de prueba '.uniqid()])->id,
+            'titulo' => 'Viaje de prueba',
+            'descripcion' => 'Descripción de prueba',
+            'fecha_salida' => now()->addDays(10)->toDateString(),
+            'duracion_dias' => 5,
+            'precio' => 199.99,
+            'contacto' => 'test@agencia.com',
+        ], $overrides);
+    }
+
+    private function viajeRequestData(array $overrides = []): array
+    {
+        return array_merge([
+            'ciudad_nombre' => 'Ciudad de prueba '.uniqid(),
+            'pais' => 'País de prueba',
             'titulo' => 'Viaje de prueba',
             'descripcion' => 'Descripción de prueba',
             'fecha_salida' => now()->addDays(10)->toDateString(),
@@ -44,7 +58,7 @@ class ViajeAuthorizationTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->post(route('viajes.store'), $this->viajeData())
+            ->post(route('viajes.store'), $this->viajeRequestData())
             ->assertForbidden();
 
         $this->assertDatabaseCount('viajes', 0);
@@ -66,23 +80,24 @@ class ViajeAuthorizationTest extends TestCase
         $agencia->forceFill(['is_agencia' => true])->save();
 
         $this->actingAs($agencia)
-            ->post(route('viajes.store'), $this->viajeData())
+            ->post(route('viajes.store'), $this->viajeRequestData(['ciudad_nombre' => 'marrakech']))
             ->assertRedirect();
 
         $this->assertDatabaseHas('viajes', [
             'titulo' => 'Viaje de prueba',
             'user_id' => $agencia->id,
         ]);
+        $this->assertDatabaseHas('ciudades', ['nombre' => 'Marrakech']);
     }
 
     public function test_owner_can_update_their_own_viaje(): void
     {
         $agencia = User::factory()->create();
         $agencia->forceFill(['is_agencia' => true])->save();
-        $viaje = Viaje::create($this->viajeData(['user_id' => $agencia->id, 'activo' => true]));
+        $viaje = Viaje::create($this->viajeModelData(['user_id' => $agencia->id, 'activo' => true]));
 
         $this->actingAs($agencia)
-            ->put(route('viajes.update', $viaje), $this->viajeData(['titulo' => 'Actualizado']))
+            ->put(route('viajes.update', $viaje), $this->viajeRequestData(['titulo' => 'Actualizado']))
             ->assertRedirect(route('viajes.show', $viaje));
 
         $this->assertSame('Actualizado', $viaje->fresh()->titulo);
@@ -92,13 +107,13 @@ class ViajeAuthorizationTest extends TestCase
     {
         $agencia = User::factory()->create();
         $agencia->forceFill(['is_agencia' => true])->save();
-        $viaje = Viaje::create($this->viajeData(['user_id' => $agencia->id, 'activo' => true]));
+        $viaje = Viaje::create($this->viajeModelData(['user_id' => $agencia->id, 'activo' => true]));
 
         $admin = User::factory()->create();
         $admin->forceFill(['is_admin' => true])->save();
 
         $this->actingAs($admin)
-            ->put(route('viajes.update', $viaje), $this->viajeData(['titulo' => 'Editado por admin']))
+            ->put(route('viajes.update', $viaje), $this->viajeRequestData(['titulo' => 'Editado por admin']))
             ->assertRedirect(route('viajes.show', $viaje));
 
         $this->assertSame('Editado por admin', $viaje->fresh()->titulo);
@@ -108,13 +123,13 @@ class ViajeAuthorizationTest extends TestCase
     {
         $owner = User::factory()->create();
         $owner->forceFill(['is_agencia' => true])->save();
-        $viaje = Viaje::create($this->viajeData(['user_id' => $owner->id, 'activo' => true]));
+        $viaje = Viaje::create($this->viajeModelData(['user_id' => $owner->id, 'activo' => true]));
 
         $otherAgencia = User::factory()->create();
         $otherAgencia->forceFill(['is_agencia' => true])->save();
 
         $this->actingAs($otherAgencia)
-            ->put(route('viajes.update', $viaje), $this->viajeData(['titulo' => 'Intento ajeno']))
+            ->put(route('viajes.update', $viaje), $this->viajeRequestData(['titulo' => 'Intento ajeno']))
             ->assertForbidden();
 
         $this->assertNotSame('Intento ajeno', $viaje->fresh()->titulo);
@@ -124,7 +139,7 @@ class ViajeAuthorizationTest extends TestCase
     {
         $owner = User::factory()->create();
         $owner->forceFill(['is_agencia' => true])->save();
-        $viaje = Viaje::create($this->viajeData(['user_id' => $owner->id, 'activo' => true]));
+        $viaje = Viaje::create($this->viajeModelData(['user_id' => $owner->id, 'activo' => true]));
 
         $otherAgencia = User::factory()->create();
         $otherAgencia->forceFill(['is_agencia' => true])->save();

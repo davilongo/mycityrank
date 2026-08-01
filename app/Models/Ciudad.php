@@ -8,12 +8,7 @@ class Ciudad extends Model
 {
     protected $table = 'ciudades';
 
-    protected $fillable = ['nombre'];
-
-    public function getRouteKeyName(): string
-    {
-        return 'nombre';
-    }
+    protected $fillable = ['nombre', 'pais'];
 
     public function posts()
     {

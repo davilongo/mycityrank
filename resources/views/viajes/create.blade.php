@@ -25,17 +25,21 @@
                 <span class="form-section-title">Destino</span>
             </div>
             <div class="form-section-body">
-                <div class="form-group">
-                    <label for="ciudad_id">Ciudad destino</label>
-                    <select name="ciudad_id" id="ciudad_id" required style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);font-size:14px;">
-                        <option value="">— Selecciona una ciudad —</option>
-                        @foreach($ciudades as $ciudad)
-                            <option value="{{ $ciudad->id }}" {{ old('ciudad_id') == $ciudad->id ? 'selected' : '' }}>
-                                {{ $ciudad->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('ciudad_id') <span class="error">{{ $message }}</span> @enderror
+                <div class="auth-row-2">
+                    <div class="form-group">
+                        <label for="ciudad_nombre">Ciudad destino</label>
+                        <input type="text" name="ciudad_nombre" id="ciudad_nombre"
+                               value="{{ old('ciudad_nombre') }}"
+                               placeholder="Ej: Marrakech, Roma, Nueva York..." required>
+                        @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="pais">País</label>
+                        <input type="text" name="pais" id="pais"
+                               value="{{ old('pais') }}"
+                               placeholder="Ej: Marruecos, Italia, Estados Unidos..." required>
+                        @error('pais') <span class="error">{{ $message }}</span> @enderror
+                    </div>
                 </div>
             </div>
         </div>

@@ -21,14 +21,14 @@ class ViajeController extends Controller
 
     public function create()
     {
-        $ciudades = Ciudad::orderBy('nombre')->get();
-        return view('viajes.create', compact('ciudades'));
+        return view('viajes.create');
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'ciudad_id'    => 'required|exists:ciudades,id',
+            'ciudad_nombre' => 'required|string|max:100',
+            'pais'         => 'required|string|max:100',
             'titulo'       => 'required|string|max:255',
             'descripcion'  => 'required|string',
             'imagen'       => 'nullable|image|max:4096',
@@ -38,6 +38,9 @@ class ViajeController extends Controller
             'plazas'       => 'nullable|integer|min:1',
             'contacto'     => 'required|string|max:255',
         ]);
+
+        $data['ciudad_id'] = $this->resolveCiudad($data['ciudad_nombre'], $data['pais'])->id;
+        unset($data['ciudad_nombre'], $data['pais']);
 
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('viajes', 'public');
@@ -59,8 +62,7 @@ class ViajeController extends Controller
     public function edit(Viaje $viaje)
     {
         $this->authorize('update', $viaje);
-        $ciudades = Ciudad::orderBy('nombre')->get();
-        return view('viajes.edit', compact('viaje', 'ciudades'));
+        return view('viajes.edit', compact('viaje'));
     }
 
     public function update(Request $request, Viaje $viaje)
@@ -68,7 +70,8 @@ class ViajeController extends Controller
         $this->authorize('update', $viaje);
 
         $data = $request->validate([
-            'ciudad_id'    => 'required|exists:ciudades,id',
+            'ciudad_nombre' => 'required|string|max:100',
+            'pais'         => 'required|string|max:100',
             'titulo'       => 'required|string|max:255',
             'descripcion'  => 'required|string',
             'imagen'       => 'nullable|image|max:4096',
@@ -79,6 +82,9 @@ class ViajeController extends Controller
             'contacto'     => 'required|string|max:255',
             'activo'       => 'boolean',
         ]);
+
+        $data['ciudad_id'] = $this->resolveCiudad($data['ciudad_nombre'], $data['pais'])->id;
+        unset($data['ciudad_nombre'], $data['pais']);
 
         if ($request->hasFile('imagen')) {
             if ($viaje->imagen) {
@@ -102,5 +108,13 @@ class ViajeController extends Controller
         }
         $viaje->delete();
         return redirect()->route('viajes.index')->with('success', 'Viaje eliminado.');
+    }
+
+    private function resolveCiudad(string $nombre, string $pais): Ciudad
+    {
+        return Ciudad::firstOrCreate([
+            'nombre' => ucfirst(strtolower(trim($nombre))),
+            'pais'   => ucfirst(strtolower(trim($pais))),
+        ]);
     }
 }
