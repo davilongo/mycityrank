@@ -32,15 +32,9 @@
                 <input type="email" name="email" id="email" value="{{ old('email') }}" required autocomplete="username">
             </div>
 
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" name="password" id="password" required autocomplete="new-password">
-            </div>
-
-            <div class="form-group">
-                <label for="password_confirmation">Confirmar contraseña</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password">
-            </div>
+            <p style="font-size:13px;color:var(--text-muted);margin:0 0 18px;">
+                No hace falta que le pongas contraseña: le enviaremos un email para que elija la suya.
+            </p>
 
             <div class="form-actions">
                 <a href="{{ route('admin.usuarios.index') }}" class="btn-ghost">Cancelar</a>

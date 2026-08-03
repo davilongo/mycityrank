@@ -7,7 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -42,19 +43,23 @@ class AdminController extends Controller
     public function storeAgencia(Request $request)
     {
         $data = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
         ]);
 
         $user = User::create([
             'name'     => $data['name'],
             'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => Hash::make(Str::random(40)),
         ]);
         $user->forceFill(['is_agencia' => true])->save();
 
-        Mail::to($user)->send(new AgenciaBienvenida($user));
+        $resetUrl = route('password.reset', [
+            'token' => Password::broker()->createToken($user),
+            'email' => $user->email,
+        ]);
+
+        Mail::to($user)->send(new AgenciaBienvenida($user, $resetUrl));
 
         return redirect()->route('admin.usuarios.index')->with('success', "Agencia \"{$user->name}\" creada correctamente.");
     }

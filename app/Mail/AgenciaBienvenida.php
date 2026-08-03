@@ -14,14 +14,16 @@ class AgenciaBienvenida extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public User $user)
+    public function __construct(public User $user, public string $resetUrl)
     {
+        $this->onQueue('emails');
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Bienvenido a XploreFree — tu cuenta de agencia ya está lista',
+            from: new \Illuminate\Mail\Mailables\Address(config('mail.from.address'), 'MyCityRank'),
+            subject: 'Bienvenido a MyCityRank — tu cuenta de agencia ya está lista',
         );
     }
 

@@ -79,8 +79,6 @@ class AdminAuthorizationTest extends TestCase
             ->post(route('admin.usuarios.store-agencia'), [
                 'name' => 'Nueva Agencia',
                 'email' => 'nueva-agencia@example.com',
-                'password' => 'password',
-                'password_confirmation' => 'password',
             ])
             ->assertForbidden();
 
@@ -96,8 +94,6 @@ class AdminAuthorizationTest extends TestCase
             ->post(route('admin.usuarios.store-agencia'), [
                 'name' => 'Nueva Agencia',
                 'email' => 'nueva-agencia@example.com',
-                'password' => 'password',
-                'password_confirmation' => 'password',
             ])
             ->assertRedirect(route('admin.usuarios.index'));
 
@@ -107,7 +103,7 @@ class AdminAuthorizationTest extends TestCase
         $this->assertFalse($nuevo->isAdmin());
     }
 
-    public function test_creating_a_new_agencia_sends_the_welcome_email(): void
+    public function test_creating_a_new_agencia_sends_the_welcome_email_with_a_working_password_link(): void
     {
         Mail::fake();
 
@@ -117,13 +113,26 @@ class AdminAuthorizationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.usuarios.store-agencia'), [
             'name' => 'Nueva Agencia',
             'email' => 'nueva-agencia@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
-        Mail::assertQueued(AgenciaBienvenida::class, function ($mail) {
-            return $mail->hasTo('nueva-agencia@example.com');
-        });
+        Mail::assertQueued(AgenciaBienvenida::class, fn ($mail) => $mail->hasTo('nueva-agencia@example.com'));
+
+        $queued = Mail::queued(AgenciaBienvenida::class)->first();
+        $token = basename(parse_url($queued->resetUrl, PHP_URL_PATH));
+
+        $this->post(route('logout'));
+
+        $response = $this->post(route('password.store'), [
+            'token' => $token,
+            'email' => 'nueva-agencia@example.com',
+            'password' => 'nueva-contrasena',
+            'password_confirmation' => 'nueva-contrasena',
+        ]);
+
+        $response->assertRedirect(route('login'));
+
+        $nuevo = User::where('email', 'nueva-agencia@example.com')->first();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('nueva-contrasena', $nuevo->password));
     }
 
     public function test_normal_user_cannot_delete_a_user(): void
