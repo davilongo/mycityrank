@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AgenciaBienvenida;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 
 class AdminController extends Controller
@@ -52,6 +54,17 @@ class AdminController extends Controller
         ]);
         $user->forceFill(['is_agencia' => true])->save();
 
+        Mail::to($user)->send(new AgenciaBienvenida($user));
+
         return redirect()->route('admin.usuarios.index')->with('success', "Agencia \"{$user->name}\" creada correctamente.");
+    }
+
+    public function destroyUsuario(Request $request, User $user)
+    {
+        abort_if($user->id === $request->user()->id, 403, 'No puedes eliminar tu propia cuenta.');
+
+        $user->delete();
+
+        return back()->with('success', "{$user->name} ha sido eliminado.");
     }
 }

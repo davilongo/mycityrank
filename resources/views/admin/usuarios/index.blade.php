@@ -53,6 +53,14 @@
                             {{ $usuario->isAgencia() ? 'Quitar agencia' : 'Declarar agencia' }}
                         </button>
                     </form>
+
+                    @if($usuario->id !== auth()->id())
+                        <form method="POST" action="{{ route('admin.usuarios.destroy', $usuario) }}"
+                              onsubmit="return confirm('¿Seguro que quieres eliminar a {{ $usuario->name }}? Esta acción no se puede deshacer.');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn-ghost" style="color:#dc2626;">Eliminar</button>
+                        </form>
+                    @endif
                 </div>
             @endforeach
         </div>

@@ -174,26 +174,33 @@
             {{-- User card --}}
             <div class="pd-user-card">
                 <div class="pd-user-row">
-                    <a href="{{ route('users.show', $post->user) }}" class="pd-user-av">
-                        @if($post->user->avatar ?? false)
-                            <img src="{{ asset($post->user->avatar) }}" alt="">
+                    @if($post->user)
+                        <a href="{{ route('users.show', $post->user) }}" class="pd-user-av">
+                            @if($post->user->avatar)
+                                <img src="{{ asset($post->user->avatar) }}" alt="">
+                            @else
+                                {{ mb_substr($post->user->name, 0, 1) }}
+                            @endif
+                        </a>
+                        <div class="pd-user-info">
+                            <a href="{{ route('users.show', $post->user) }}" class="pd-user-name">{{ $post->user->name }}</a>
+                            @php $rank = $post->user->rankBadge(); @endphp
+                            <span class="rank-badge rank-badge--{{ $rank['tier'] }} rank-badge--sm">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
+                            <div class="pd-user-since">{{ __('posts.member_since') }} {{ $post->user->created_at->translatedFormat('F Y') }}</div>
+                        </div>
+                        @auth
+                            @if(Auth::id() !== $post->user_id)
+                                <a href="{{ route('users.show', $post->user) }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
+                            @endif
                         @else
-                            {{ mb_substr($post->user->name ?? 'A', 0, 1) }}
-                        @endif
-                    </a>
-                    <div class="pd-user-info">
-                        <a href="{{ route('users.show', $post->user) }}" class="pd-user-name">{{ $post->user->name ?? __('posts.anonymous') }}</a>
-                        @php $rank = $post->user->rankBadge(); @endphp
-                        <span class="rank-badge rank-badge--{{ $rank['tier'] }} rank-badge--sm">{{ $rank['emoji'] }} {{ $rank['label'] }}</span>
-                        <div class="pd-user-since">{{ __('posts.member_since') }} {{ $post->user->created_at->translatedFormat('F Y') }}</div>
-                    </div>
-                    @auth
-                        @if(Auth::id() !== $post->user_id)
-                            <a href="{{ route('users.show', $post->user) }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
-                        @endif
+                            <a href="{{ route('login') }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
+                        @endauth
                     @else
-                        <a href="{{ route('login') }}" class="pd-follow-btn">{{ __('posts.follow') }}</a>
-                    @endauth
+                        <div class="pd-user-av">A</div>
+                        <div class="pd-user-info">
+                            <span class="pd-user-name">{{ __('posts.anonymous') }}</span>
+                        </div>
+                    @endif
                 </div>
 
                 @auth

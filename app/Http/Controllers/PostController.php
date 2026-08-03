@@ -115,7 +115,7 @@ class PostController extends Controller
             'likes',
             'hashtags',
         ]);
-        $post->user->loadCount('posts');
+        $post->user?->loadCount('posts');
         return view('posts.show', compact('post'));
     }
 

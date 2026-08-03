@@ -92,6 +92,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/usuarios/nueva-agencia', [AdminController::class, 'crearAgencia'])->name('usuarios.create-agencia');
     Route::post('/usuarios/nueva-agencia', [AdminController::class, 'storeAgencia'])->name('usuarios.store-agencia');
     Route::post('/usuarios/{user}/agencia', [AdminController::class, 'toggleAgencia'])->name('usuarios.toggle-agencia');
+    Route::delete('/usuarios/{user}', [AdminController::class, 'destroyUsuario'])->name('usuarios.destroy');
 });
 
 require __DIR__.'/auth.php';

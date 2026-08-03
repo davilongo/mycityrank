@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\AgenciaBienvenida;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AdminAuthorizationTest extends TestCase
@@ -103,5 +105,61 @@ class AdminAuthorizationTest extends TestCase
         $this->assertNotNull($nuevo);
         $this->assertTrue($nuevo->isAgencia());
         $this->assertFalse($nuevo->isAdmin());
+    }
+
+    public function test_creating_a_new_agencia_sends_the_welcome_email(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create();
+        $admin->forceFill(['is_admin' => true])->save();
+
+        $this->actingAs($admin)->post(route('admin.usuarios.store-agencia'), [
+            'name' => 'Nueva Agencia',
+            'email' => 'nueva-agencia@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        Mail::assertQueued(AgenciaBienvenida::class, function ($mail) {
+            return $mail->hasTo('nueva-agencia@example.com');
+        });
+    }
+
+    public function test_normal_user_cannot_delete_a_user(): void
+    {
+        $user = User::factory()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($user)
+            ->delete(route('admin.usuarios.destroy', $target))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('users', ['id' => $target->id]);
+    }
+
+    public function test_admin_can_delete_a_user(): void
+    {
+        $admin = User::factory()->create();
+        $admin->forceFill(['is_admin' => true])->save();
+        $target = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->delete(route('admin.usuarios.destroy', $target))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    }
+
+    public function test_admin_cannot_delete_their_own_account(): void
+    {
+        $admin = User::factory()->create();
+        $admin->forceFill(['is_admin' => true])->save();
+
+        $this->actingAs($admin)
+            ->delete(route('admin.usuarios.destroy', $admin))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
     }
 }
