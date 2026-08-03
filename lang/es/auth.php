@@ -17,7 +17,7 @@ return [
     'repeat_password'      => 'Repite la contraseña',
     'enter_btn'            => 'Entrar',
     'register_btn'         => 'Registrarse',
-    'forgot_password_text' => 'Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.',
-    'email_reset_link'     => 'Email Password Reset Link',
-    'reset_password_title' => 'Reset Password',
+    'forgot_password_text' => '¿Olvidaste tu contraseña? No hay problema. Dinos tu email y te enviaremos un enlace para crear una nueva.',
+    'email_reset_link'     => 'Enviar enlace de recuperación',
+    'reset_password_title' => 'Crear nueva contraseña',
 ];
