@@ -11,6 +11,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CiudadFollowController;
 use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SolicitudViajeController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -37,9 +38,10 @@ Route::get('/ciudades/{ciudad}', [CiudadController::class, 'show'])->name('ciuda
 Route::get('/users/buscar', [UserController::class, 'search'])->name('users.search');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
-// Viajes organizados (create antes que {viaje} para evitar colisión)
+// Viajes organizados (create/demanda antes que {viaje} para evitar colisión)
 Route::get('/viajes', [ViajeController::class, 'index'])->name('viajes.index');
 Route::get('/viajes/create', [ViajeController::class, 'create'])->middleware(['auth', 'agencia'])->name('viajes.create');
+Route::get('/viajes/demanda', [SolicitudViajeController::class, 'index'])->middleware(['auth', 'agencia'])->name('solicitudes.index');
 Route::get('/viajes/{viaje}', [ViajeController::class, 'show'])->name('viajes.show');
 Route::get('/viajes/{viaje}/edit', [ViajeController::class, 'edit'])->middleware(['auth', 'agencia'])->name('viajes.edit');
 
@@ -48,6 +50,10 @@ Route::get('/hashtag/{name}', [PostController::class, 'hashtag'])->name('hashtag
 
 // Mapa
 Route::get('/mapa', [PostController::class, 'map'])->name('mapa');
+
+// Quiero viajar a... (peticiones de destino, abierto a visitantes sin cuenta)
+Route::get('/quiero-viajar', [SolicitudViajeController::class, 'create'])->name('solicitudes.create');
+Route::post('/quiero-viajar', [SolicitudViajeController::class, 'store'])->middleware('throttle:10,1')->name('solicitudes.store');
 
 // Rutas protegidas (requieren login)
 Route::middleware('auth')->group(function () {

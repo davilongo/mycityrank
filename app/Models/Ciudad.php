@@ -24,4 +24,9 @@ class Ciudad extends Model
     {
         return $this->hasMany(Viaje::class);
     }
+
+    public function solicitudesViaje()
+    {
+        return $this->hasMany(SolicitudViaje::class);
+    }
 }
