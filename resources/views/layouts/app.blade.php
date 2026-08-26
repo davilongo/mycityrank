@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" data-theme="{{ session('theme', 'dark') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,6 +89,11 @@
 
             {{-- Acciones desktop --}}
             <div class="nav-actions">
+                @php $currentTheme = session('theme', 'dark'); @endphp
+                <a href="{{ route('theme.switch', $currentTheme === 'dark' ? 'light' : 'dark') }}"
+                   class="nav-link nav-bell" title="Cambiar a modo {{ $currentTheme === 'dark' ? 'claro' : 'oscuro' }}">
+                    {{ $currentTheme === 'dark' ? '☀️' : '🌙' }}
+                </a>
                 @auth
                     <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">{{ __('nav.feed') }}</a>
                     <a href="{{ route('users.discover') }}" class="nav-link {{ request()->routeIs('users.discover') ? 'active' : '' }}">{{ __('nav.discover') }}</a>
@@ -163,6 +168,11 @@
             </div>
 
             <div class="nav-mobile-divider"></div>
+
+            <a href="{{ route('theme.switch', $currentTheme === 'dark' ? 'light' : 'dark') }}"
+               class="nav-mobile-link">
+                {{ $currentTheme === 'dark' ? '☀️ Modo claro' : '🌙 Modo oscuro' }}
+            </a>
 
             <a href="{{ route('posts.index') }}"
                class="nav-mobile-link {{ request()->routeIs('posts.index') && !request('seccion') ? 'active' : '' }}">

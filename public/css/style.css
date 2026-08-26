@@ -46,6 +46,38 @@
   --shadow-sm:   0 4px 16px rgba(4, 6, 16, 0.35);
   --shadow-md:   0 8px 28px rgba(4, 6, 16, 0.4);
   --shadow-lg:   0 16px 48px rgba(4, 6, 16, 0.5);
+
+  --page-bg:
+    radial-gradient(ellipse 900px 600px at 12% -8%, rgba(255, 133, 82, 0.14), transparent 60%),
+    radial-gradient(ellipse 1000px 800px at 88% 8%, rgba(69, 217, 201, 0.09), transparent 55%),
+    radial-gradient(ellipse 1200px 900px at 50% 105%, rgba(101, 73, 169, 0.26), transparent 60%),
+    linear-gradient(180deg, var(--night) 0%, var(--night-2) 45%, var(--dusk) 100%);
+}
+
+/* Modo claro: paleta original previa al rediseño oscuro */
+:root[data-theme="light"] {
+  --accent:      #0284c7;
+  --accent-dark: #0369a1;
+  --accent-glow: rgba(2, 132, 199, 0.12);
+  --accent-light: #e0f2fe;
+  --teal:        #0ea5a3;
+  --teal-soft:   rgba(14, 165, 163, 0.12);
+
+  --bg:          #f1f5f9;
+  --white:       #ffffff;
+  --card-bg:     #ffffff;
+  --card-bg-strong: #ffffff;
+  --text:        #1e293b;
+  --text-muted:  #64748b;
+  --border:      #e2e8f0;
+  --input-bg:    #f8fafc;
+
+  --shadow:      0 4px 20px rgba(15, 23, 42, 0.08);
+  --shadow-sm:   0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-md:   0 8px 28px rgba(15, 23, 42, 0.10);
+  --shadow-lg:   0 8px 40px rgba(15, 23, 42, 0.14);
+
+  --page-bg: var(--bg);
 }
 
 /* ===== RESET ===== */
@@ -53,16 +85,12 @@
 a { text-decoration: none; color: inherit; }
 
 html {
-  background: var(--night);
+  background: var(--bg);
 }
 
 body {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background:
-    radial-gradient(ellipse 900px 600px at 12% -8%, rgba(255, 133, 82, 0.14), transparent 60%),
-    radial-gradient(ellipse 1000px 800px at 88% 8%, rgba(69, 217, 201, 0.09), transparent 55%),
-    radial-gradient(ellipse 1200px 900px at 50% 105%, rgba(101, 73, 169, 0.26), transparent 60%),
-    linear-gradient(180deg, var(--night) 0%, var(--night-2) 45%, var(--dusk) 100%);
+  background: var(--page-bg);
   background-attachment: fixed;
   color: var(--text);
   font-size: 14px;

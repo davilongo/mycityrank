@@ -25,6 +25,14 @@ Route::get('/lang/{locale}', function (string $locale) {
     return redirect()->back();
 })->name('lang.switch');
 
+// Cambio de tema (claro/oscuro)
+Route::get('/tema/{modo}', function (string $modo) {
+    if (in_array($modo, ['light', 'dark'])) {
+        session(['theme' => $modo]);
+    }
+    return redirect()->back();
+})->name('theme.switch');
+
 // Posts (create debe ir antes que {post})
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/create', [PostController::class, 'create'])->middleware('auth')->name('posts.create');
