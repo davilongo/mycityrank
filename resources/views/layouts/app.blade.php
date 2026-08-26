@@ -27,7 +27,9 @@
     <nav class="navbar" x-data="{ mobileOpen: false }">
         <div class="nav-inner">
             <a href="{{ route('posts.index') }}" class="nav-logo">
-                <img src="{{ asset('images/logo-icon.png') }}" alt="" class="nav-logo-icon">
+                <span class="nav-logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z" stroke="#0a0e1c" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 2v20M3 7l9 5 9-5" stroke="#0a0e1c" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                </span>
                 <span class="nav-logo-text">MyCityRank</span>
             </a>
 
@@ -44,6 +46,10 @@
                 <a href="{{ route('viajes.index') }}"
                    class="nav-link {{ request()->routeIs('viajes.*') ? 'active' : '' }}">
                     ✈️ Viajes
+                </a>
+                <a href="{{ route('solicitudes.create') }}"
+                   class="nav-link {{ request()->routeIs('solicitudes.create') ? 'active' : '' }}">
+                    🧭 Quiero viajar
                 </a>
 
                 {{-- Buscador desktop --}}
@@ -87,6 +93,9 @@
                     <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">{{ __('nav.feed') }}</a>
                     <a href="{{ route('users.discover') }}" class="nav-link {{ request()->routeIs('users.discover') ? 'active' : '' }}">{{ __('nav.discover') }}</a>
                     <a href="{{ route('bookmarks.index') }}" class="nav-link {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">{{ __('nav.bookmarks') }}</a>
+                    @if(Auth::user()->isAgencia() || Auth::user()->isAdmin())
+                        <a href="{{ route('solicitudes.index') }}" class="nav-link {{ request()->routeIs('solicitudes.index') ? 'active' : '' }}">📊 Demanda</a>
+                    @endif
                     @if(Auth::user()->isAdmin())
                         <a href="{{ route('admin.usuarios.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">🏢 Agencias</a>
                     @endif
@@ -167,6 +176,10 @@
                class="nav-mobile-link {{ request()->routeIs('viajes.*') ? 'active' : '' }}">
                 ✈️ Viajes
             </a>
+            <a href="{{ route('solicitudes.create') }}"
+               class="nav-mobile-link {{ request()->routeIs('solicitudes.create') ? 'active' : '' }}">
+                🧭 Quiero viajar
+            </a>
 
             @auth
                 <div class="nav-mobile-divider"></div>
@@ -183,6 +196,12 @@
                    class="nav-mobile-link {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">
                     {{ __('nav.bookmarks') }}
                 </a>
+                @if(Auth::user()->isAgencia() || Auth::user()->isAdmin())
+                    <a href="{{ route('solicitudes.index') }}"
+                       class="nav-mobile-link {{ request()->routeIs('solicitudes.index') ? 'active' : '' }}">
+                        📊 Demanda de destinos
+                    </a>
+                @endif
                 <a href="{{ route('notifications.index') }}"
                    class="nav-mobile-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                     {{ __('nav.notifications') }}
