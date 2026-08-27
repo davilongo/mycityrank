@@ -40,6 +40,16 @@
     </div>
 </section>
 
+{{-- ===== QUIERO VIAJAR (CTA) ===== --}}
+<a href="{{ route('solicitudes.create') }}" class="travel-cta-banner">
+    <span class="travel-cta-banner-icon">🧭</span>
+    <span class="travel-cta-banner-text">
+        <span class="travel-cta-banner-title">¿A dónde quieres viajar?</span>
+        <span class="travel-cta-banner-sub">Dínoslo y las agencias podrán organizarlo para ti</span>
+    </span>
+    <span class="travel-cta-banner-arrow">→</span>
+</a>
+
 {{-- ===== TRENDING ESTA SEMANA ===== --}}
 @if($trending->isNotEmpty())
 <section class="section">
