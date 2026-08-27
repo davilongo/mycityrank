@@ -33,7 +33,7 @@
                 <span class="nav-logo-text">MyCityRank</span>
             </a>
 
-            {{-- Menú desktop --}}
+            {{-- Menú desktop: solo los enlaces clave --}}
             <div class="nav-menu">
                 <a href="{{ route('posts.index') }}"
                    class="nav-link {{ request()->routeIs('posts.index') && !request('seccion') ? 'active' : '' }}">
@@ -52,7 +52,30 @@
                     🧭 Quiero viajar
                 </a>
 
-                {{-- Buscador desktop --}}
+                @auth
+                    {{-- Más ▾: secciones secundarias agrupadas --}}
+                    <div class="nav-more" x-data="{ moreOpen: false }" @click.outside="moreOpen = false">
+                        <button type="button" class="nav-link nav-more-btn" @click="moreOpen = !moreOpen" :aria-expanded="moreOpen.toString()">
+                            Más <span class="nav-more-caret" :class="{ 'nav-more-caret--open': moreOpen }">▾</span>
+                        </button>
+                        <div class="nav-more-dropdown" x-show="moreOpen" x-cloak x-transition.opacity @click="moreOpen = false">
+                            <a href="{{ route('feed') }}" class="nav-more-item {{ request()->routeIs('feed') ? 'active' : '' }}">{{ __('nav.feed') }}</a>
+                            <a href="{{ route('users.discover') }}" class="nav-more-item {{ request()->routeIs('users.discover') ? 'active' : '' }}">{{ __('nav.discover') }}</a>
+                            <a href="{{ route('bookmarks.index') }}" class="nav-more-item {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">{{ __('nav.bookmarks') }}</a>
+                            @if(Auth::user()->isAgencia() || Auth::user()->isAdmin())
+                                <a href="{{ route('solicitudes.index') }}" class="nav-more-item {{ request()->routeIs('solicitudes.index') ? 'active' : '' }}">📊 Demanda</a>
+                            @endif
+                            @if(Auth::user()->isAdmin())
+                                <a href="{{ route('admin.usuarios.index') }}" class="nav-more-item {{ request()->routeIs('admin.*') ? 'active' : '' }}">🏢 Agencias</a>
+                            @endif
+                        </div>
+                    </div>
+                @endauth
+            </div>
+
+            {{-- Acciones desktop: búsqueda, tema y perfil --}}
+            <div class="nav-actions">
+                {{-- Buscador de personas --}}
                 <div x-data="userSearch()" class="nav-user-search" @click.outside="open = false">
                     <div class="nav-search-box">
                         <span class="nav-search-icon">🔍</span>
@@ -81,29 +104,13 @@
                     </div>
                 </div>
 
-                @guest
-                    <a href="{{ route('login') }}" class="btn-ghost">{{ __('nav.login') }}</a>
-                    <a href="{{ route('register') }}" class="btn-nav">{{ __('nav.register') }}</a>
-                @endguest
-            </div>
-
-            {{-- Acciones desktop --}}
-            <div class="nav-actions">
                 @php $currentTheme = session('theme', 'dark'); @endphp
                 <a href="{{ route('theme.switch', $currentTheme === 'dark' ? 'light' : 'dark') }}"
                    class="nav-link nav-bell" title="Cambiar a modo {{ $currentTheme === 'dark' ? 'claro' : 'oscuro' }}">
                     {{ $currentTheme === 'dark' ? '☀️' : '🌙' }}
                 </a>
+
                 @auth
-                    <a href="{{ route('feed') }}" class="nav-link {{ request()->routeIs('feed') ? 'active' : '' }}">{{ __('nav.feed') }}</a>
-                    <a href="{{ route('users.discover') }}" class="nav-link {{ request()->routeIs('users.discover') ? 'active' : '' }}">{{ __('nav.discover') }}</a>
-                    <a href="{{ route('bookmarks.index') }}" class="nav-link {{ request()->routeIs('bookmarks.*') ? 'active' : '' }}">{{ __('nav.bookmarks') }}</a>
-                    @if(Auth::user()->isAgencia() || Auth::user()->isAdmin())
-                        <a href="{{ route('solicitudes.index') }}" class="nav-link {{ request()->routeIs('solicitudes.index') ? 'active' : '' }}">📊 Demanda</a>
-                    @endif
-                    @if(Auth::user()->isAdmin())
-                        <a href="{{ route('admin.usuarios.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">🏢 Agencias</a>
-                    @endif
                     <a href="{{ route('notifications.index') }}" class="nav-link nav-bell {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                         🔔
                         @php $unread = Auth::user()->unreadNotifications()->count(); @endphp
@@ -127,6 +134,9 @@
                         @csrf
                         <button type="submit" class="btn-ghost">{{ __('nav.logout') }}</button>
                     </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-ghost">{{ __('nav.login') }}</a>
+                    <a href="{{ route('register') }}" class="btn-nav">{{ __('nav.register') }}</a>
                 @endauth
             </div>
 
