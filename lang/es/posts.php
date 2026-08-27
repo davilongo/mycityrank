@@ -4,7 +4,7 @@ return [
     // Hero / index
     'discover_world'      => 'Descubre el mundo',
     'search_subtitle'     => 'Busca una ciudad y explora todo lo que tiene para ofrecer',
-    'search_placeholder'  => '¿A dónde vas? Ej: Algeciras, Madrid, Sevilla...',
+    'search_placeholder'  => '¿A dónde quieres ir? Ej. Madrid, Sevilla...',
     'search_btn'          => 'Buscar',
     'city_not_found'      => 'No encontramos esa ciudad',
     'trending_title'      => '🔥 Tendencia esta semana',

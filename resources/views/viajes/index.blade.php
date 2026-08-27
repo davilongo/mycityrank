@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Viajes organizados — XploreFree')
+@section('title', 'Viajes organizados — MyCityRank')
 @section('meta_description', 'Descubre viajes organizados a los mejores destinos.')
 
 @section('contenido')

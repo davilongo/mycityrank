@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $viaje->titulo . ' — XploreFree')
+@section('title', $viaje->titulo . ' — MyCityRank')
 @section('meta_description', Str::limit($viaje->descripcion, 160))
 @if($viaje->imagen)
 @section('og_image', asset('storage/' . $viaje->imagen))

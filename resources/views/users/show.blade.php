@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', $user->name . ' — XploreFree')
-@section('meta_description', $user->bio ?? ($user->name . ' comparte lugares increíbles en XploreFree.'))
+@section('title', $user->name . ' — MyCityRank')
+@section('meta_description', $user->bio ?? ($user->name . ' comparte lugares increíbles en MyCityRank.'))
 @if($posts->first()?->image)
 @section('og_image', url($posts->first()->image))
 @endif

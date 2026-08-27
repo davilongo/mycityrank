@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mapa — XploreFree')
+@section('title', 'Mapa — MyCityRank')
 
 @section('contenido')
 

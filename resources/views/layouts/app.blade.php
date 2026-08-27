@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'XploreFree — ' . __('posts.discover_world'))</title>
+    <title>@yield('title', 'MyCityRank — ' . __('posts.discover_world'))</title>
     <meta name="description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <!-- Open Graph -->
     <meta property="og:site_name" content="MyCityRank">
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('title', 'XploreFree — ' . __('posts.discover_world'))">
+    <meta property="og:title" content="@yield('title', 'MyCityRank — ' . __('posts.discover_world'))">
     <meta property="og:description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
     <meta property="og:locale" content="{{ app()->getLocale() === 'en' ? 'en_US' : 'es_ES' }}">
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'XploreFree')">
+    <meta name="twitter:title" content="@yield('title', 'MyCityRank')">
     <meta name="twitter:description" content="@yield('meta_description', __('posts.search_subtitle'))">
     <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">

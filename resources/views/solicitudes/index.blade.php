@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Demanda de destinos — XploreFree')
+@section('title', 'Demanda de destinos — MyCityRank')
 @section('meta_description', 'Destinos que los usuarios piden, agrupados por ciudad.')
 
 @section('contenido')

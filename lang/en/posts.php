@@ -4,7 +4,7 @@ return [
     // Hero / index
     'discover_world'      => 'Discover the world',
     'search_subtitle'     => 'Search for a city and explore everything it has to offer',
-    'search_placeholder'  => 'Where are you going? E.g.: Paris, London, Tokyo...',
+    'search_placeholder'  => 'Where to? E.g. Paris, Tokyo...',
     'search_btn'          => 'Search',
     'city_not_found'      => 'We couldn\'t find that city',
     'trending_title'      => '🔥 Trending this week',

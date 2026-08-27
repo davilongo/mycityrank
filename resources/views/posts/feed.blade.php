@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('feed.your_feed') . ' — XploreFree')
+@section('title', __('feed.your_feed') . ' — MyCityRank')
 
 @section('contenido')
 

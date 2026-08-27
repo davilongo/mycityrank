@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nuevo viaje — XploreFree')
+@section('title', 'Nuevo viaje — MyCityRank')
 
 @section('contenido')
 

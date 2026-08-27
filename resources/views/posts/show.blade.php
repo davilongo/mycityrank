@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $post->title . ' — XploreFree')
+@section('title', $post->title . ' — MyCityRank')
 @section('meta_description', Str::limit(strip_tags($post->content), 155))
 @section('og_type', 'article')
 @section('og_image', url($post->image))
