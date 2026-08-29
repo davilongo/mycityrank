@@ -52,6 +52,8 @@
     radial-gradient(ellipse 1000px 800px at 88% 8%, rgba(69, 217, 201, 0.09), transparent 55%),
     radial-gradient(ellipse 1200px 900px at 50% 105%, rgba(101, 73, 169, 0.26), transparent 60%),
     linear-gradient(180deg, var(--night) 0%, var(--night-2) 45%, var(--dusk) 100%);
+
+  --dropdown-bg: rgba(14, 18, 38, 0.94);
 }
 
 /* Modo claro: paleta original previa al rediseño oscuro */
@@ -78,6 +80,7 @@
   --shadow-lg:   0 8px 40px rgba(15, 23, 42, 0.14);
 
   --page-bg: var(--bg);
+  --dropdown-bg: #ffffff;
 }
 
 /* ===== RESET ===== */
@@ -375,7 +378,7 @@ h1, h2, h3, h4,
   top: calc(100% + 8px);
   left: 0;
   min-width: 190px;
-  background: var(--card-bg-strong);
+  background: var(--dropdown-bg);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   border: 1px solid var(--border);

@@ -17,7 +17,7 @@ $catDesc = trans('catdesc');
         </div>
     </div>
 
-    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data"
+    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off"
           x-data='{ "sel": {!! json_encode(old("category", "")) !!} }'>
         @csrf
 
