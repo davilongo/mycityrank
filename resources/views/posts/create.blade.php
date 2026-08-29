@@ -238,11 +238,12 @@ $catDesc = trans('catdesc');
     const searchResults = document.getElementById('map-search-results');
     let geoResults = [];
 
-    async function geocode(q) {
+    async function geocode(q, fallbackPlace) {
         if (!q) {
             const ciudad = document.getElementById('ciudad_nombre')?.value.trim() || '';
             const place  = searchInput.value.trim();
             q = ciudad ? `${place}, ${ciudad}` : place;
+            fallbackPlace = (ciudad && place) ? place : null;
         }
         if (!q) return;
         searchBtn.textContent = '...';
@@ -255,6 +256,9 @@ $catDesc = trans('catdesc');
             const data = await res.json();
             searchBtn.textContent = '{{ __('posts.map_search_btn') }}';
             if (!data.length) {
+                if (fallbackPlace) {
+                    return geocode(fallbackPlace);
+                }
                 searchResults.innerHTML = '<div class="map-search-empty">{{ __('posts.map_no_results') }}</div>';
                 searchResults.style.display = 'block';
                 return;
