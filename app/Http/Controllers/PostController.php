@@ -63,6 +63,7 @@ class PostController extends Controller
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
+            'pais'          => 'nullable|string|max:100',
             'images'        => 'required|array|min:1|max:6',
             'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
@@ -75,7 +76,7 @@ class PostController extends Controller
         $url       = $urls[0];
         $extraUrls = count($urls) > 1 ? array_slice($urls, 1) : null;
 
-        $ciudad   = $this->resolveCiudad($validated['ciudad_nombre']);
+        $ciudad   = $this->resolveCiudad($validated['ciudad_nombre'], $validated['pais'] ?? null);
         $baseSlug = Str::slug($validated['title']);
         $slug     = $baseSlug;
         $counter  = 1;
@@ -135,6 +136,7 @@ class PostController extends Controller
             'content'       => 'required',
             'category'      => 'required|string|in:' . implode(',', \App\Models\Post::CATEGORIES),
             'ciudad_nombre' => 'required|string|max:100',
+            'pais'          => 'nullable|string|max:100',
             'images'        => 'nullable|array|max:6',
             'images.*'      => 'image|max:8192',
             'lat'           => 'nullable|numeric|between:-90,90',
@@ -159,7 +161,7 @@ class PostController extends Controller
             collect($oldImages)->each(fn ($url) => $this->deleteImageFile($url));
         }
 
-        $post->ciudad_id = $this->resolveCiudad($validated['ciudad_nombre'])->id;
+        $post->ciudad_id = $this->resolveCiudad($validated['ciudad_nombre'], $validated['pais'] ?? null)->id;
         $post->lat = $request->lat ?: null;
         $post->lng = $request->lng ?: null;
         $post->save();
@@ -265,10 +267,21 @@ class PostController extends Controller
         return Auth::id() === $post->user_id || $user?->isAdmin();
     }
 
-    private function resolveCiudad(string $nombre): Ciudad
+    private function resolveCiudad(string $nombre, ?string $pais = null): Ciudad
     {
-        return Ciudad::firstOrCreate([
-            'nombre' => ucfirst(strtolower(trim($nombre)))
-        ]);
+        if (!$pais && str_contains($nombre, ',')) {
+            [$nombre, $pais] = array_map('trim', explode(',', $nombre, 2));
+        }
+
+        $nombre = ucfirst(strtolower(trim($nombre)));
+        $pais   = $pais ? ucfirst(strtolower(trim($pais))) : null;
+
+        $ciudad = Ciudad::firstOrCreate(['nombre' => $nombre]);
+
+        if ($pais && !$ciudad->pais) {
+            $ciudad->update(['pais' => $pais]);
+        }
+
+        return $ciudad;
     }
 }

@@ -53,18 +53,24 @@ $catDesc = trans('catdesc');
                 <p class="form-section-sub">{{ __('posts.details_sub') }}</p>
             </div>
             <div class="form-section-body">
+                <div class="form-group">
+                    <label for="title">{{ __('posts.title_label') }}</label>
+                    <input type="text" name="title" id="title"
+                           value="{{ old('title', $post->title) }}" required>
+                    @error('title') <span class="error">{{ $message }}</span> @enderror
+                </div>
                 <div class="auth-row-2">
-                    <div class="form-group">
-                        <label for="title">{{ __('posts.title_label') }}</label>
-                        <input type="text" name="title" id="title"
-                               value="{{ old('title', $post->title) }}" required>
-                        @error('title') <span class="error">{{ $message }}</span> @enderror
-                    </div>
                     <div class="form-group">
                         <label for="ciudad_nombre">{{ __('posts.city_label') }}</label>
                         <input type="text" name="ciudad_nombre" id="ciudad_nombre"
                                value="{{ old('ciudad_nombre', $post->ciudad->nombre ?? '') }}" required>
                         @error('ciudad_nombre') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="pais">País <span class="auth-hint-label">(opcional)</span></label>
+                        <input type="text" name="pais" id="pais"
+                               value="{{ old('pais', $post->ciudad->pais ?? '') }}" placeholder="Ej: España, Portugal...">
+                        @error('pais') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -255,9 +261,11 @@ $catDesc = trans('catdesc');
     async function geocode(q, fallbackPlace) {
         if (!q) {
             const ciudad = document.getElementById('ciudad_nombre')?.value.trim() || '';
+            const pais   = document.getElementById('pais')?.value.trim() || '';
             const place  = searchInput.value.trim();
-            q = ciudad ? `${place}, ${ciudad}` : place;
-            fallbackPlace = (ciudad && place) ? place : null;
+            const parts  = [place, ciudad, pais].filter(Boolean);
+            q = parts.join(', ');
+            fallbackPlace = (parts.length > 1 && place) ? place : null;
         }
         if (!q) return;
         searchBtn.textContent = '...';

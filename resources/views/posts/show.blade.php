@@ -262,7 +262,7 @@
                 <div class="pd-info-card">
                     <div class="pd-info-header">{{ __('posts.place_info') }}</div>
                     @if($post->ciudad)
-                        <div class="pd-info-city">📍 {{ $post->ciudad->nombre }}{{ $post->place_name ? ', ' . $post->place_name : '' }}</div>
+                        <div class="pd-info-city">📍 {{ $post->ciudad->nombre }}{{ $post->ciudad->pais ? ', ' . $post->ciudad->pais : '' }}</div>
                     @endif
                     <div class="pd-info-tags">
                         @foreach($post->tags as $tag)
