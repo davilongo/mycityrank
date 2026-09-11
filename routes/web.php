@@ -13,6 +13,7 @@ use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SolicitudViajeController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\YunomadAuthController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -66,6 +67,10 @@ Route::post('/quiero-viajar', [SolicitudViajeController::class, 'store'])->middl
 
 // YuNomad: newsletters publicadas, consumidas por public/yunomad/index.html vía fetch
 Route::get('/yunomad/newsletters', [NewsletterController::class, 'yunomad'])->name('yunomad.newsletters');
+
+// YuNomad: login propio del equipo (misma cuenta, pantalla con marca YuNomad)
+Route::get('/yunomad/login', [YunomadAuthController::class, 'create'])->name('yunomad.login');
+Route::post('/yunomad/login', [YunomadAuthController::class, 'store'])->middleware('throttle:10,1')->name('yunomad.login.store');
 
 // Rutas protegidas (requieren login)
 Route::middleware('auth')->group(function () {

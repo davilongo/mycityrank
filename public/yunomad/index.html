@@ -93,6 +93,9 @@ a{color:inherit;}
 .wordmark .wm-yu{color:var(--air-blue);}
 .wordmark .wm-nomad{color:var(--air-red);}
 .header-tag{font-size:.82rem;color:var(--ink-soft);}
+.header-right{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+.header-team-link{font-size:.78rem;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);}
+.header-team-link:hover{color:var(--air-blue);border-color:var(--air-blue);}
 
 /* hero */
 .hero{position:relative;padding-block:56px 40px;}
@@ -326,7 +329,10 @@ footer{border-top:2px dashed var(--line);padding-block:26px 40px;}
 
   <header class="site-header">
     <div class="wordmark"><span class="wm-yu">Yu</span><span class="wm-nomad">Nomad</span></div>
-    <div class="header-tag">Agencia de viajes · Ciudad de México</div>
+    <div class="header-right">
+      <span class="header-tag">Agencia de viajes · Ciudad de México</span>
+      <a href="/yunomad/login" class="header-team-link">Acceso equipo</a>
+    </div>
   </header>
 
   <section class="hero">
