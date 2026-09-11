@@ -111,8 +111,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/usuarios/nueva-agencia', [AdminController::class, 'storeAgencia'])->name('usuarios.store-agencia');
     Route::post('/usuarios/{user}/agencia', [AdminController::class, 'toggleAgencia'])->name('usuarios.toggle-agencia');
     Route::delete('/usuarios/{user}', [AdminController::class, 'destroyUsuario'])->name('usuarios.destroy');
+});
 
-    // Admin: cartas de YuNomad
+// Admin: cartas de YuNomad (accesible para admins generales o admins de newsletter)
+Route::middleware(['auth', 'newsletter_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
     Route::get('/newsletters/crear', [NewsletterController::class, 'create'])->name('newsletters.create');
     Route::post('/newsletters', [NewsletterController::class, 'store'])->name('newsletters.store');

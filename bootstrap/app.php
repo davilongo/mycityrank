@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsAgencia;
+use App\Http\Middleware\EnsureUserIsNewsletterAdmin;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [SetLocale::class]);
         $middleware->alias([
-            'admin'   => EnsureUserIsAdmin::class,
-            'agencia' => EnsureUserIsAgencia::class,
+            'admin'             => EnsureUserIsAdmin::class,
+            'agencia'           => EnsureUserIsAgencia::class,
+            'newsletter_admin'  => EnsureUserIsNewsletterAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

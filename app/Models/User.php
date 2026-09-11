@@ -30,12 +30,18 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
             'is_agencia'        => 'boolean',
+            'is_newsletter_admin' => 'boolean',
         ];
     }
 
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;
+    }
+
+    public function isNewsletterAdmin(): bool
+    {
+        return (bool) $this->is_newsletter_admin;
     }
 
     public function isAgencia(): bool
