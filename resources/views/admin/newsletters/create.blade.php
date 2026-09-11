@@ -5,6 +5,16 @@
 @section('contenido')
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
+<style>
+    .ql-toolbar.ql-snow { background: var(--card-bg-strong); border-color: var(--border) !important; }
+    .ql-toolbar.ql-snow .ql-stroke { stroke: var(--text); }
+    .ql-toolbar.ql-snow .ql-fill { fill: var(--text); }
+    .ql-toolbar.ql-snow .ql-picker-label { color: var(--text); }
+    .ql-toolbar.ql-snow .ql-picker-options { background: var(--card-bg-strong); border-color: var(--border) !important; }
+    .ql-container.ql-snow { background: var(--input-bg); border-color: var(--border) !important; }
+    .ql-editor { color: var(--text); }
+    .ql-editor.ql-blank::before { color: var(--text-muted); }
+</style>
 
 <div class="form-page">
     <div class="form-card" style="max-width:720px;">
@@ -36,7 +46,7 @@
 
             <div class="form-group">
                 <label for="editor">Contenido de la carta</label>
-                <div id="editor" style="background:#fff;min-height:280px;">{!! old('body') !!}</div>
+                <div id="editor" style="min-height:280px;">{!! old('body') !!}</div>
                 <textarea name="body" id="body" style="display:none;">{{ old('body') }}</textarea>
             </div>
 
