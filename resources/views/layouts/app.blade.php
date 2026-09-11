@@ -66,7 +66,8 @@
                                 <a href="{{ route('solicitudes.index') }}" class="nav-more-item {{ request()->routeIs('solicitudes.index') ? 'active' : '' }}">📊 Demanda</a>
                             @endif
                             @if(Auth::user()->isAdmin())
-                                <a href="{{ route('admin.usuarios.index') }}" class="nav-more-item {{ request()->routeIs('admin.*') ? 'active' : '' }}">🏢 Agencias</a>
+                                <a href="{{ route('admin.usuarios.index') }}" class="nav-more-item {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">🏢 Agencias</a>
+                                <a href="{{ route('admin.newsletters.index') }}" class="nav-more-item {{ request()->routeIs('admin.newsletters.*') ? 'active' : '' }}">✉️ Cartas YuNomad</a>
                             @endif
                         </div>
                     </div>
@@ -233,8 +234,11 @@
                     {{ __('nav.new_post_mobile') }}
                 </a>
                 @if(Auth::user()->isAdmin())
-                    <a href="{{ route('admin.usuarios.index') }}" class="nav-mobile-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.usuarios.index') }}" class="nav-mobile-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">
                         🏢 Agencias
+                    </a>
+                    <a href="{{ route('admin.newsletters.index') }}" class="nav-mobile-link {{ request()->routeIs('admin.newsletters.*') ? 'active' : '' }}">
+                        ✉️ Cartas YuNomad
                     </a>
                 @endif
 

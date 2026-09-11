@@ -12,6 +12,7 @@ use App\Http\Controllers\CiudadFollowController;
 use App\Http\Controllers\ViajeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SolicitudViajeController;
+use App\Http\Controllers\NewsletterController;
 
 Route::get('/', function () {
     return redirect()->route('posts.index');
@@ -63,6 +64,9 @@ Route::get('/mapa', [PostController::class, 'map'])->name('mapa');
 Route::get('/quiero-viajar', [SolicitudViajeController::class, 'create'])->name('solicitudes.create');
 Route::post('/quiero-viajar', [SolicitudViajeController::class, 'store'])->middleware('throttle:10,1')->name('solicitudes.store');
 
+// YuNomad: newsletters publicadas, consumidas por public/yunomad/index.html vía fetch
+Route::get('/yunomad/newsletters', [NewsletterController::class, 'yunomad'])->name('yunomad.newsletters');
+
 // Rutas protegidas (requieren login)
 Route::middleware('auth')->group(function () {
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
@@ -107,6 +111,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/usuarios/nueva-agencia', [AdminController::class, 'storeAgencia'])->name('usuarios.store-agencia');
     Route::post('/usuarios/{user}/agencia', [AdminController::class, 'toggleAgencia'])->name('usuarios.toggle-agencia');
     Route::delete('/usuarios/{user}', [AdminController::class, 'destroyUsuario'])->name('usuarios.destroy');
+
+    // Admin: cartas de YuNomad
+    Route::get('/newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
+    Route::get('/newsletters/crear', [NewsletterController::class, 'create'])->name('newsletters.create');
+    Route::post('/newsletters', [NewsletterController::class, 'store'])->name('newsletters.store');
+    Route::get('/newsletters/{newsletter}/editar', [NewsletterController::class, 'edit'])->name('newsletters.edit');
+    Route::put('/newsletters/{newsletter}', [NewsletterController::class, 'update'])->name('newsletters.update');
+    Route::delete('/newsletters/{newsletter}', [NewsletterController::class, 'destroy'])->name('newsletters.destroy');
 });
 
 require __DIR__.'/auth.php';
